@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{{ title }}{% trans 'Configurator' %}{% endblock %}
+
+{% block body-content %}
+    <div id="div_table_sites">
+        <table id="table_buttons" class="table_buttons">
+            <caption id="caption_sites" class="caption_sites">Sites</caption>
+            <tbody>
+                <tr>
+                    <div id="div-buttons-sites" class="btn-group">
+                        {% for site in listsites %}
+                            <td>
+                                <button type="button" id="{{ site.sitename }}" class="btn btn-default" name="{{ site.sitename }}" value="{{ site.sitename }}" onclick="get_selected('{{ site.sitename }}')">{{ site.sitename | capfirst }}</button>
+                            </td>
+                        {% endfor %}
+                        <td>
+                            <button type="button" id="all" class="btn btn-default" name="all" value="all" onclick="get_selected('all')">All</button>
+                        </td>
+                        <td>
+                            <button id="button_clear" class="btn btn-default" disabled="disabled" onclick="clear_page()" role="button">Clear</button>
+                        </td>
+                    </div>
+                </tr>
+                <tr>
+                    <td id="id-td-commands" class="td-commands" colspan="2">
+                        <select id="id-select-commands" class="form-control" disabled>
+                            <option selected></option>
+                            <option>Power Up</option>
+                            <option>Power Status</option>
+                            <option>Power Down</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button id="button_go" class="btn btn-default" disabled="disabled" onclick="get_host()" role="button">Go</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="div_hostlist" class="div_hostlist"></div>
+{% endblock %}

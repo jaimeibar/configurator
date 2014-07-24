@@ -52,3 +52,10 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# Pycharm config
+.idea
+
+# Secret configs
+configurator/settings_secret.py
+nodes/fixtures
+configurator.db
