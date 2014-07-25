@@ -26,22 +26,22 @@ function get_selected(sname) {
             $.each(data, function(i, item) {
                 var hostname = item.fields.hostname;
                 var ip = item.fields.ip;
-                var content = "<tr><td><input type='checkbox' name='hosts' onchange='enable_go_button()' value=" + hostname + "></td>"
-                content += "<td>" + hostname + "</td>"
+                var content = "<tr><td><input type='checkbox' name='hosts' onchange='enable_go_button()' value=" + hostname + "></td>";
+                content += "<td>" + hostname + "</td>";
                 content += "<td>" + ip + "</td></tr>";
                 $("#table_hosts").find("tbody:last").append($(content));
             });
         }
     });
-    $( "#button_clear").prop("disabled", false);
+    $("#button_clear").prop("disabled", false);
 }
 
 function get_host() {
     var selected_hosts = [];
-    var checked_hosts = $( "input:checkbox[name=hosts]:checked" );
+    var checked_hosts = $("input:checkbox[name=hosts]:checked");
     checked_hosts.each(function() {
         selected_hosts.push($(this).val());
-    })
+    });
     alert(selected_hosts);
 }
 
@@ -52,18 +52,18 @@ function check_all() {
 }
 
 function clear_page() {
-    $( "#div_hostlist" ).empty();
-    $( "#button_clear").prop("disabled", true);
+    $("#div_hostlist").empty();
+    $("#button_clear").prop("disabled", true);
     enable_go_button();
 }
 
 function enable_go_button() {
-    var isdisabled = $( "#button_go").prop("disabled");
-    if ($( "input:checkbox[name=hosts]:checked").length > 0 || isdisabled == true ) {
-        $( "#button_go").prop("disabled", false);
-        $( "#id-select-commands").prop("disabled", false);
+    var isdisabled = $("#button_go").prop("disabled");
+    if ($("input:checkbox[name=hosts]:checked").length > 0 || isdisabled == true ) {
+        $("#button_go").prop("disabled", false);
+        $("#id-select-commands").prop("disabled", false);
     } else {
-        $( "#button_go").prop("disabled", true);
-        $( "#id-select-commands").prop("disabled", true);
+        $("#button_go").prop("disabled", true);
+        $("#id-select-commands").prop("disabled", true);
     }
 }
