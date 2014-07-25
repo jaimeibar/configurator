@@ -170,9 +170,16 @@ hr {
 
 */
 
-.table_buttons {
+.table {
+    width: 80%;
     max-width: 100%;
     margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.table-buttons {
+    max-width: 100%;
     margin-right: auto;
     margin-left: auto;
     padding: 8px;
@@ -181,12 +188,6 @@ hr {
     border: none;
 }
 
-.table {
-    width: 80%;
-    margin-right: auto;
-    margin-left: auto;
-}
-
-.caption_sites {
+.caption-sites {
     font-size: 60px;
 }
