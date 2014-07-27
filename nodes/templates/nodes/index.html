@@ -35,11 +35,17 @@
                         </select>
                     </td>
                     <td>
-                        <button id="button_go" class="btn btn-default" disabled="disabled" onclick="get_host()" role="button">Go</button>
+                        <button id="button_go" class="btn btn-default" disabled="disabled" onclick="get_selected_hosts()" role="button">Go</button>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div id="div_hostlist" class="div_hostlist"></div>
+    <div id="div-result">
+        <p>{{ copy }}</p>
+        {% for node in result %}
+            <p>{{ node }}</p>
+        {% endfor %}
+    </div>
 {% endblock %}
