@@ -42,7 +42,28 @@ function get_host() {
     checked_hosts.each(function() {
         selected_hosts.push($(this).val());
     });
-    alert(selected_hosts);
+    // alert(selected_hosts);
+    return selected_hosts;
+}
+
+function get_selected_hosts() {
+    $("#button_go").bind("click", function() {
+        var allhosts = get_host();
+        console.log(allhosts);
+        $.ajax({
+            type: "GET",
+            url: "/index/",
+            data: {
+                selectedhosts: allhosts
+            },
+            success: function(data) {
+                console.log('Success');
+            },
+            error: function(data) {
+                console.log("Error");
+            }
+        });
+    });
 }
 
 function check_all() {
