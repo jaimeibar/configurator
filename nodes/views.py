@@ -32,6 +32,16 @@ def index(request):
                 wnodes = Node.objects.filter(site__sitename__exact=name)
             json_ = serializers.serialize('json', wnodes, fields=['hostname', 'ip'])
             return HttpResponse(json_, content_type="application/json")
+        elif 'selectedhosts[]' in request.GET.keys():
+            copy = request.GET.copy()
+            # res = execute_ipmi_command(copy.values())
+            return render(request, 'nodes/index.html', {'result': copy.values()})
     else:
         sites = Site.objects.all()
         return render(request, "nodes/index.html", {"listsites": sites})
+
+
+def execute_ipmi_command(host_list):
+    for host in host_list:
+        print host
+    return 'OK'
