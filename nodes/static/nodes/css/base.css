@@ -171,7 +171,7 @@ hr {
 */
 
 .table {
-    width: 80%;
+    width: inherit;
     max-width: 100%;
     margin-bottom: 20px;
     margin-left: auto;
@@ -190,4 +190,10 @@ hr {
 
 .caption-sites {
     font-size: 60px;
+}
+
+.div_hostlist {
+    width: 80%;
+    max-width: 1200px;
+    margin: auto;
 }
