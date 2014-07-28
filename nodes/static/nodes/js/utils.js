@@ -7,7 +7,7 @@ function get_selected(sname) {
         data: {
             name: sname
         },
-        url: "/index/",
+        url: "/index",
         dataType: "json",
         success: function(data) {
             if ($("#table_hosts").length != 0) {
@@ -42,22 +42,24 @@ function get_host() {
     checked_hosts.each(function() {
         selected_hosts.push($(this).val());
     });
-    // alert(selected_hosts);
     return selected_hosts;
 }
 
 function get_selected_hosts() {
     $("#button_go").bind("click", function() {
         var allhosts = get_host();
-        console.log(allhosts);
         $.ajax({
             type: "GET",
-            url: "/index/",
+            url: "/index",
+            dataType: "json",
             data: {
                 selectedhosts: allhosts
             },
             success: function(data) {
-                console.log('Success');
+                $.each(data, function(i, item) {
+                    var hostselected = "<p>" + item + "</p>";
+                    $("#div-result").append($(hostselected));
+                })
             },
             error: function(data) {
                 console.log("Error");
