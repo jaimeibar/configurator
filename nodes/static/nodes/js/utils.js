@@ -26,7 +26,7 @@ function get_selected(sname) {
             $.each(data, function(i, item) {
                 var hostname = item.fields.hostname;
                 var ip = item.fields.ip;
-                var content = "<tr><td><input type='checkbox' name='hosts' onchange='enable_go_button()' value=" + hostname + "></td>";
+                var content = "<tr><td><input type='checkbox' name='hosts' onchange='checked_host()' value=" + hostname + "></td>";
                 content += "<td>" + hostname + "</td>";
                 content += "<td>" + ip + "</td></tr>";
                 $("#table_hosts").find("tbody:last").append($(content));
@@ -71,22 +71,41 @@ function get_selected_hosts() {
 function check_all() {
     var c = $("input:checkbox[name=all_hosts]")[0].checked;
     $("input:checkbox[name=hosts]").prop('checked', c);
-    enable_go_button();
+    manage_go_button();
 }
 
 function clear_page() {
     $("#div_hostlist").empty();
-    $("#button_clear").prop("disabled", true);
-    enable_go_button();
+    manage_go_button();
+    manage_clear_button();
 }
 
-function enable_go_button() {
+function manage_go_button() {
     var isdisabled = $("#button_go").prop("disabled");
-    if ($("input:checkbox[name=hosts]:checked").length > 0 || isdisabled == true ) {
+    if (isdisabled == true) {
         $("#button_go").prop("disabled", false);
-        $("#id-select-commands").prop("disabled", false);
     } else {
         $("#button_go").prop("disabled", true);
+    }
+    /*
+    var isdisabled = $("#button_go").prop("disabled");
+    if ($("input:checkbox[name=hosts]:checked").length > 0 || isdisabled == true ) {
+        $("#id-select-commands").prop("disabled", false);
+    } else {
         $("#id-select-commands").prop("disabled", true);
     }
+    */
+}
+
+function manage_clear_button() {
+    var isdisabled = $("#button_clear").prop("disabled");
+    if (isdisabled == true) {
+        $("#button_clear").prop("disabled", false);
+    } else {
+        $("#button_clear").prop("disabled", true);
+    }
+}
+
+function checked_host() {
+    manage_go_button();
 }
