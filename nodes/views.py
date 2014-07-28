@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from nodes.models import Site, Node
 from django.core import serializers
+import simplejson
 
 
 """
@@ -30,12 +31,12 @@ def index(request):
                 wnodes = Node.objects.all()
             else:
                 wnodes = Node.objects.filter(site__sitename__exact=name)
-            json_ = serializers.serialize('json', wnodes, fields=['hostname', 'ip'])
+            json_ = serializers.serialize('json', wnodes, fields=('hostname', 'ip'))
             return HttpResponse(json_, content_type="application/json")
         elif 'selectedhosts[]' in request.GET.keys():
-            copy = request.GET.copy()
-            # res = execute_ipmi_command(copy.values())
-            return render(request, 'nodes/index.html', {'result': copy.values()})
+            data = request.GET.getlist('selectedhosts[]')
+            jsondata = simplejson.dumps(data)
+            return HttpResponse(jsondata, content_type='application/json')
     else:
         sites = Site.objects.all()
         return render(request, "nodes/index.html", {"listsites": sites})
