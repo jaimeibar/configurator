@@ -23,6 +23,8 @@ class IndexView(generic.ListView):
         return context
 """
 
+result = {}
+
 
 def index(request):
     if request.is_ajax():
@@ -36,6 +38,7 @@ def index(request):
             return HttpResponse(json_, content_type="application/json")
         elif 'selectedhosts[]' in request.GET.keys():
             data = request.GET.getlist('selectedhosts[]')
+            cmd = request.GET.getlist('cmd')
             res = execute_ipmi_command(data)
             jsondata = json.dumps(res)
             return HttpResponse(jsondata, content_type='application/json')
@@ -47,9 +50,12 @@ def index(request):
 def execute_ipmi_command(host_list):
     for host in host_list:
         ipmicmd = command.Command(host, 'admin', 'admin', onlogon=do_command)
-        print(ipmicmd)
+
 
 def do_command(result, ipmisession):
+    if 'error' in result:
+        print('Error for node {0}'.format(ipmisession.bmc))
+        return
     command_ = 'power'
     if command_ == 'power':
         value = ipmisession.get_power()
