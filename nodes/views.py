@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from nodes.models import Site, Node
 from django.core import serializers
-import simplejson
+import simplejson as json
 
 
 """
@@ -35,7 +35,7 @@ def index(request):
             return HttpResponse(json_, content_type="application/json")
         elif 'selectedhosts[]' in request.GET.keys():
             data = request.GET.getlist('selectedhosts[]')
-            jsondata = simplejson.dumps(data)
+            jsondata = json.dumps(data)
             return HttpResponse(jsondata, content_type='application/json')
     else:
         sites = Site.objects.all()
