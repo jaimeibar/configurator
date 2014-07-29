@@ -3,6 +3,7 @@ from django.shortcuts import render
 from nodes.models import Site, Node
 from django.core import serializers
 import simplejson as json
+from pyghmi.ipmi import command
 
 
 """
@@ -35,7 +36,8 @@ def index(request):
             return HttpResponse(json_, content_type="application/json")
         elif 'selectedhosts[]' in request.GET.keys():
             data = request.GET.getlist('selectedhosts[]')
-            jsondata = json.dumps(data)
+            res = execute_ipmi_command(data)
+            jsondata = json.dumps(res)
             return HttpResponse(jsondata, content_type='application/json')
     else:
         sites = Site.objects.all()
@@ -44,5 +46,11 @@ def index(request):
 
 def execute_ipmi_command(host_list):
     for host in host_list:
-        print host
-    return 'OK'
+        ipmicmd = command.Command(host, 'admin', 'admin', onlogon=do_command)
+        print(ipmicmd)
+
+def do_command(result, ipmisession):
+    command_ = 'power'
+    if command_ == 'power':
+        value = ipmisession.get_power()
+        return value
