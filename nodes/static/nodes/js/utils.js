@@ -72,9 +72,11 @@ function check_all() {
     if ($("input:checkbox[name=hosts]:checked").length == 0) {
         $("input:checkbox[name=hosts]").prop('checked', true);
         $("#button_go").prop("disabled", false);
+        $("#id-select-commands").prop("disabled", false);
     } else {
         $("input:checkbox[name=hosts]").prop('checked', false);
         $("#button_go").prop("disabled", true);
+        $("#id-select-commands").prop("disabled", true);
     }
 }
 
@@ -107,10 +109,10 @@ function manage_clear_button() {
 }
 
 function checked_host() {
-    console.log($("input:checkbox[name=hosts]:checked").length);
     var nhosts = $("input:checkbox[name=hosts]:checked").length;
     if (nhosts > 0) {
         $("#button_go").prop("disabled", false);
+        $("#id-select-commands").prop("disabled", false);
         if (nhosts == 36) {
             $("#all_hosts").prop("checked", true);
         } else {
@@ -118,5 +120,6 @@ function checked_host() {
         }
     } else {
         $("#button_go").prop("disabled", true);
+        $("#id-select-commands").prop("disabled", true);
     }
 }
