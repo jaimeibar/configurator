@@ -15,7 +15,7 @@ function get_selected(sname) {
             }
             var tcontent = "<table id='table_hosts' class='table table-bordered table-hover'>" +
                 "<thead><tr><th><input id='all_hosts' type='checkbox' name='all_hosts' onchange='check_all()'></th>" +
-                "<th>Hostname</th><th>IP</th></tr></thead><tbody></tbody></table>";
+                "<th>Hostname</th><th>IP</th><th>Status</th></tr></thead><tbody></tbody></table>";
             $("#div_hostlist").append($(tcontent));
             /*
             $.each(data, function(i, item) {
@@ -28,7 +28,8 @@ function get_selected(sname) {
                 var ip = item.fields.ip;
                 var content = "<tr><td><input type='checkbox' name='hosts' onchange='checked_host()' value=" + hostname + "></td>";
                 content += "<td>" + hostname + "</td>";
-                content += "<td>" + ip + "</td></tr>";
+                content += "<td>" + ip + "</td>";
+                content += "<td>foo</td></tr>";
                 $("#table_hosts").find("tbody:last").append($(content));
             });
         }
