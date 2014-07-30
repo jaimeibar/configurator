@@ -58,9 +58,11 @@ function get_selected_hosts() {
                 cmd: command
             },
             success: function(data) {
+                console.log(data);
+                // var con = "";
                 $.each(data, function(i, item) {
-                    var hostselected = "<p>" + item + "</p>";
-                    $("#div-result").append($(hostselected));
+                    var con = "<p>" + item.power + "</p>";
+                    $("#div-result").append($(con));
                 })
             },
             error: function(data) {
