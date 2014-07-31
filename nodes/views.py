@@ -54,11 +54,11 @@ def do_command(result, ipmisession):
     command_ = IPMICMD
     if command_ == 'status':
         value = ipmisession.get_power()
-        RESULT[ipmisession.bmc] = {command_: value.get('powerstate')}
     elif command_ == 'up':
-        pass
+        value = ipmisession.set_power('on', wait=True)
     elif command_ == 'down':
-        pass
+        value = ipmisession.set_power('off', wait=True)
+    RESULT[ipmisession.bmc] = {command_: value.get('powerstate')}
 
 
 def execute_ipmi_command(host_list, ipmicommand):
