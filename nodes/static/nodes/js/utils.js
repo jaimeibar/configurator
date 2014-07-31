@@ -58,6 +58,7 @@ function get_selected_hosts() {
                 selectedhosts: allhosts,
                 cmd: command
             },
+            traditional: true,
             success: function(data) {
                 $.each(data, function(i, item) {
                     var con = "<p>" + item.power + "</p>";
