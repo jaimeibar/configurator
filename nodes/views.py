@@ -58,7 +58,7 @@ def do_command(result, ipmisession):
         value = ipmisession.set_power('on', wait=True)
     elif command_ == 'down':
         value = ipmisession.set_power('off', wait=True)
-    RESULT[ipmisession.bmc] = {command_: value.get('powerstate')}
+    RESULT[ipmisession.bmc] = {'power': value.get('powerstate')}
 
 
 def execute_ipmi_command(host_list, ipmicommand):
