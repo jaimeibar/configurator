@@ -59,10 +59,8 @@ function get_selected_hosts() {
                 cmd: command
             },
             success: function(data) {
-                console.log(data);
-                // var con = "";
                 $.each(data, function(i, item) {
-                    var con = "<p>" + item.power + "</p>";
+                    var con = "<p>" + item.status + "</p>";
                     $("#div-result").append($(con));
                 })
             },
