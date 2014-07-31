@@ -36,8 +36,8 @@ def index(request):
                 wnodes = Node.objects.filter(site__sitename__exact=name)
             json_ = serializers.serialize('json', wnodes, fields=('hostname', 'ip'))
             return HttpResponse(json_, content_type="application/json")
-        elif 'selectedhosts[]' in request.GET.keys():
-            data = request.GET.getlist('selectedhosts[]')
+        elif 'selectedhosts' in request.GET.keys():
+            data = request.GET.getlist('selectedhosts')
             rescmd = request.GET.getlist('cmd').pop()
             execute_ipmi_command(data, rescmd)
             jsondata = json.dumps(RESULT)
