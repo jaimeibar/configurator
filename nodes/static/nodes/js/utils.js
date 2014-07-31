@@ -60,7 +60,7 @@ function get_selected_hosts() {
             },
             success: function(data) {
                 $.each(data, function(i, item) {
-                    var con = "<p>" + item.status + "</p>";
+                    var con = "<p>" + item.power + "</p>";
                     $("#div-result").append($(con));
                 })
             },
