@@ -47,28 +47,26 @@ function get_host() {
 }
 
 function get_selected_hosts() {
-    $("#button_go").bind("click", function() {
-        var allhosts = get_host();
-        var command = $("#id-select-commands").val();
-        $.ajax({
-            type: "GET",
-            url: "/index",
-            dataType: "json",
-            data: {
-                selectedhosts: allhosts,
-                cmd: command
-            },
-            traditional: true,
-            success: function(data) {
-                $.each(data, function(i, item) {
-                    var con = "<p>" + item.power + "</p>";
-                    $("#div-result").append($(con));
-                })
-            },
-            error: function(data) {
-                console.log("Error");
-            }
-        });
+    var allhosts = get_host();
+    var command = $("#id-select-commands").val();
+    $.ajax({
+        type: "GET",
+        url: "/index",
+        dataType: "json",
+        data: {
+            selectedhosts: allhosts,
+            cmd: command
+        },
+        traditional: true,
+        success: function(data) {
+            $.each(data, function(i, item) {
+                var con = "<p>" + item.power + "</p>";
+                $("#div-result").append($(con));
+            })
+        },
+        error: function(data) {
+            console.log("Error");
+        }
     });
 }
 
