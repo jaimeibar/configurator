@@ -18,20 +18,14 @@ function get_selected(sname) {
                 "<thead><tr><th><input id='all_hosts' type='checkbox' name='all_hosts' onchange='check_all()'></th>" +
                 "<th>Hostname</th><th>IP</th><th>Status</th></tr></thead><tbody></tbody></table>";
             divhostlist.append($(tcontent));
-            /*
-            $.each(data, function(i, item) {
-                // console.log("hostname: " + data[i].fields.hostname);
-                // console.log("hostname: " + item.fields.hostname);
-            });
-            */
             $.each(data, function(i, item) {
                 var hostname = item.fields.hostname;
-                var tdkey = hostname.split(".", 1);
+                var shorthostname = hostname.split(".", 1);
                 var ip = item.fields.ip;
-                var content = "<tr id=" + tdkey + "><td><input type='checkbox' name='hosts' onchange='checked_host()' value=" + hostname + "></td>";
-                content += "<td id=" + tdkey + "h>" + hostname + "</td>";
-                content += "<td id=" + tdkey + "i>" + ip + "</td>";
-                content += "<td id=" + tdkey + "s>foo</td></tr>";
+                var content = "<tr id=" + shorthostname + "><td><input type='checkbox' name='hosts' onchange='checked_host()' value=" + shorthostname + "></td>";
+                content += "<td id=" + shorthostname + "h>" + shorthostname + "</td>";
+                content += "<td id=" + shorthostname + "i>" + ip + "</td>";
+                content += "<td id=" + shorthostname + "s></td></tr>";
                 $("#table_hosts").find("tbody:last").append($(content));
             });
         }
@@ -61,9 +55,8 @@ function get_selected_hosts() {
         },
         traditional: true,
         success: function(data) {
-            $.each(data, function(i, item) {
-                var con = "<p>" + item.power + "</p>";
-                $("#div-result").append($(con));
+            $.each(data, function(key, value) {
+                $("td[id*='" + key + "s']").text(value.power);
             })
         },
         error: function(data) {
