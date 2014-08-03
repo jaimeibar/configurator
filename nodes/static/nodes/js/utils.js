@@ -26,11 +26,12 @@ function get_selected(sname) {
             */
             $.each(data, function(i, item) {
                 var hostname = item.fields.hostname;
+                var tdkey = hostname.split(".", 1);
                 var ip = item.fields.ip;
-                var content = "<tr><td><input type='checkbox' name='hosts' onchange='checked_host()' value=" + hostname + "></td>";
-                content += "<td>" + hostname + "</td>";
-                content += "<td>" + ip + "</td>";
-                content += "<td>foo</td></tr>";
+                var content = "<tr id=" + tdkey + "><td><input type='checkbox' name='hosts' onchange='checked_host()' value=" + hostname + "></td>";
+                content += "<td id=" + tdkey + "h>" + hostname + "</td>";
+                content += "<td id=" + tdkey + "i>" + ip + "</td>";
+                content += "<td id=" + tdkey + "s>foo</td></tr>";
                 $("#table_hosts").find("tbody:last").append($(content));
             });
         }
