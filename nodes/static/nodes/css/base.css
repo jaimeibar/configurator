@@ -176,6 +176,7 @@ hr {
     margin-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
 }
 
 .table-buttons {
@@ -196,4 +197,18 @@ hr {
     width: 80%;
     max-width: 1200px;
     margin: auto;
+}
+
+.onstatus {
+    color: lime;
+    text-align: center;
+}
+
+.offstatus {
+    color: red;
+    text-align: center;
+}
+
+.table > thead > tr > th {
+    text-align: center;
 }
