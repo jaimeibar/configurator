@@ -56,7 +56,14 @@ function get_selected_hosts() {
         traditional: true,
         success: function(data) {
             $.each(data, function(key, value) {
-                $("td[id*='" + key + "s']").text(value.power);
+                var status = value.power;
+                var tdstatus = $("td[id*='" + key + "s']");
+                tdstatus.text(status);
+                if (status == 'on') {
+                    tdstatus.addClass("onstatus");
+                } else {
+                    tdstatus.addClass("offstatus");
+                }
             })
         },
         error: function(data) {
