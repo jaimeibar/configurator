@@ -37,6 +37,7 @@ def index(request):
 
 
 def do_command(result, ipmisession):
+    logger.info('foo')
     if 'error' in result:
         print('Error for node {0}'.format(ipmisession.bmc))
         return
@@ -56,7 +57,8 @@ def execute_ipmi_command(host_list, ipmicommand):
     for host in host_list:
         try:
             ipmisession = command.Command(host, 'admin', 'admin', onlogon=do_command)
-        except gaierror:
+        except gaierror as e:
+            logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
             ipmisession = False
     if ipmisession:
         ipmisession.eventloop()
