@@ -1,37 +1,18 @@
 import os.path
 import logging
-from logging.handlers import RotatingFileHandler
+from socket import gaierror
 
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.core import serializers
 import simplejson as json
 from pyghmi.ipmi import command
-from pyghmi.exceptions import IpmiException
 
 from nodes.models import Site, Node
 
 
 RESULT = {}
 logger = logging.getLogger(os.path.basename(__name__))
-
-
-def configure_logger():
-    """
-    Config for logging messages.
-    """
-    # Set up a specific logger with our desired output level
-    logger.setLevel(logging.DEBUG)
-    # Create a rotating file handler
-    handler = RotatingFileHandler("configurator.log", maxBytes=1000000, backupCount=10)
-    # Add the log message handler to the logger
-    logger.addHandler(handler)
-    # create formatter
-    message = "[%(asctime)s] [%(levelname)s] %(message)s"
-    time_format = "%a %b %d %H:%M:%S %Y"
-    log_format = logging.Formatter(message, time_format)
-    # Add format to the handler
-    handler.setFormatter(log_format)
 
 
 def index(request):
@@ -73,5 +54,9 @@ def execute_ipmi_command(host_list, ipmicommand):
     global IPMICMD
     IPMICMD = ipmicommand
     for host in host_list:
-        ipmisession = command.Command(host, 'admin', 'admin', onlogon=do_command)
-    ipmisession.eventloop()
+        try:
+            ipmisession = command.Command(host, 'admin', 'admin', onlogon=do_command)
+        except gaierror:
+            ipmisession = False
+    if ipmisession:
+        ipmisession.eventloop()
