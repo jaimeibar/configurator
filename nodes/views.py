@@ -30,8 +30,11 @@ def index(request):
             data = request.GET.getlist('selectedhosts')
             logger.debug('Data: {0}'.format(data))
             rescmd = request.GET.getlist('cmd').pop()
+            logger.info('Command: {0}'.format(rescmd))
             execute_ipmi_command(data, rescmd)
+            logger.info('Executing ipmi command')
             jsondata = json.dumps(RESULT)
+            logger.info('Json: {0}'.format(jsondata))
             return HttpResponse(jsondata, content_type='application/json')
     else:
         sites = Site.objects.all()
@@ -71,6 +74,6 @@ def execute_ipmi_command(host_list, ipmicommand):
             ipmisession = command.Command(host, 'admin', 'admin', onlogon=do_command)
         except gaierror as e:
             logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
-            ipmisession = False
-    if ipmisession:
+            ipmisess = False
+    if ipmisess:
         ipmisession.eventloop()
