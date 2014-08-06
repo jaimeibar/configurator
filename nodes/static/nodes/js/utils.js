@@ -55,16 +55,20 @@ function get_selected_hosts() {
         },
         traditional: true,
         success: function(data) {
-            $.each(data, function(key, value) {
-                var status = value.power;
-                var tdstatus = $("td[id*='" + key + "s']");
-                tdstatus.text(status);
-                if (status == 'on') {
-                    tdstatus.addClass("onstatus");
-                } else {
-                    tdstatus.addClass("offstatus");
-                }
-            })
+            if ($.isEmptyObject(data)) {
+                console.log('No data received');
+            } else {
+                $.each(data, function(key, value) {
+                    var status = value.power;
+                    var tdstatus = $("td[id*='" + key + "s']");
+                    tdstatus.text(status);
+                    if (status == 'on') {
+                        tdstatus.addClass("onstatus");
+                    } else {
+                        tdstatus.addClass("offstatus");
+                    }
+                })
+            }
         },
         error: function(data) {
             console.log("Error");
