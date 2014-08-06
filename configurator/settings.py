@@ -111,14 +111,6 @@ LOGGING = {
             'maxBytes': 1000000,
             'backupCount': 10
         },
-        'foo': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'configurator.log'),
-            'formatter': 'simple',
-            'maxBytes': 1000000,
-            'backupCount': 10
-        },
     },
     'loggers': {
         'django.request': {
@@ -132,7 +124,7 @@ LOGGING = {
             'propagate': True
         },
         'django.db.backends': {
-            'handlers': ['foo'],
+            'handlers': ['file'],
             'level': 'DEBUG',
             'propagate': True
         },
