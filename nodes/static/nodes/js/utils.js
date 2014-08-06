@@ -124,7 +124,7 @@ function checked_host() {
     if (nhosts > 0) {
         $("#button_go").prop("disabled", false);
         selector.prop("disabled", false);
-        selector.find("option[id=up]").prop("selected", true);
+        selector.find("option[id=status]").prop("selected", true);
         if (nhosts == 36) {
             $("#all_hosts").prop("checked", true);
         } else {
