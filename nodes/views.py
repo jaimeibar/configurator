@@ -72,6 +72,7 @@ def execute_ipmi_command(host_list, ipmicommand):
     for host in host_list:
         try:
             ipmisession = command.Command(host, 'admin', 'admin', onlogon=do_command)
+            ipmisess = True
         except gaierror as e:
             logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
             ipmisess = False
