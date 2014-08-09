@@ -76,5 +76,8 @@ def execute_ipmi_command(host_list, ipmicommand):
         except gaierror as e:
             logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
             ipmisess = False
+        except IpmiException as e:
+            logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
+            ipmisess = False
     if ipmisess:
         ipmisession.eventloop()
