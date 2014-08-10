@@ -123,9 +123,11 @@ function manage_clear_button() {
 
 function checked_host() {
     var selector = $("#id-select-commands");
+    var buttongo = $("#button_go");
     var nhosts = $("input:checkbox[name=hosts]:checked").length;
     if (nhosts > 0) {
-        $("#button_go").prop("disabled", false);
+        buttongo.prop("disabled", false);
+        buttongo.text("Go (" + nhosts + ")");
         selector.prop("disabled", false);
         selector.find("option[id=status]").prop("selected", true);
         if (nhosts == 36) {
@@ -134,7 +136,8 @@ function checked_host() {
             $("#all_hosts").prop("checked", false);
         }
     } else {
-        $("#button_go").prop("disabled", true);
+        buttongo.text("Go (" + nhosts + ")");
+        buttongo.prop("disabled", true);
         selector.prop("disabled", true);
         selector.find("option[id=empty]").prop("selected", true);
     }
