@@ -77,14 +77,17 @@ function get_selected_hosts() {
 }
 
 function check_all() {
+    var selector = $("#id-select-commands");
     if ($("input:checkbox[name=hosts]:checked").length == 0) {
         $("input:checkbox[name=hosts]").prop('checked', true);
         $("#button_go").prop("disabled", false);
-        $("#id-select-commands").prop("disabled", false);
+        selector.prop("disabled", false);
+        selector.find("option[id=status]").prop("selected", true);
     } else {
         $("input:checkbox[name=hosts]").prop('checked', false);
         $("#button_go").prop("disabled", true);
-        $("#id-select-commands").prop("disabled", true);
+        selector.prop("disabled", true);
+        selector.find("option[id=empty]").prop("selected", true);
     }
 }
 
