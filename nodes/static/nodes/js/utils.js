@@ -110,6 +110,7 @@ function manage_go_button() {
             buttongo.prop("disabled", false);
         }
     } else {
+        buttongo.text("Go (0)");
         buttongo.prop("disabled", true);
     }
 }
