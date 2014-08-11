@@ -79,18 +79,22 @@ function get_selected_hosts() {
 function check_all() {
     var selector = $("#id-select-commands");
     var buttongo = $("#button_go");
-    if ($("input:checkbox[name=hosts]:checked").length == 0) {
-        $("input:checkbox[name=hosts]").prop('checked', true);
+    var isanyselected = $("input:checkbox[name=hosts]:checked").length;
+    if (isanyselected == 0) {
+        $("input:checkbox[name=hosts]").prop("checked", true);
         buttongo.prop("disabled", false);
         buttongo.text("Go (36)");
         selector.prop("disabled", false);
         selector.find("option[id=status]").prop("selected", true);
-    } else {
-        $("input:checkbox[name=hosts]").prop('checked', false);
-        buttongo.text("Go (0)");
+    } else if (isanyselected == 36) {
+        $("input:checkbox[name=hosts]").prop("checked", false);
         buttongo.prop("disabled", true);
+        buttongo.text("Go (0)");
         selector.prop("disabled", true);
         selector.find("option[id=empty]").prop("selected", true);
+    } else {
+        $("input:checkbox[name=hosts]:not(:checked)").prop("checked", true);
+        buttongo.text("Go (36)");
     }
 }
 
