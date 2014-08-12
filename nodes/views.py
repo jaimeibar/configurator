@@ -26,7 +26,7 @@ def index(request):
                 wnodes = Node.objects.filter(site__sitename__exact=name)
             json_ = serializers.serialize('json', wnodes, fields=('hostname', 'ip'))
             return HttpResponse(json_, content_type="application/json")
-        elif 'selectedhosts' in request.GET.keys():
+        elif 'selectedhosts' in request.GET:
             data = request.GET.getlist('selectedhosts')
             logger.debug('Data: {0}'.format(data))
             rescmd = request.GET.getlist('cmd').pop()
@@ -67,13 +67,18 @@ def do_command(result, ipmisession):
 
 
 def execute_ipmi_command(host_list, ipmicommand):
+    RESULT.clear()
     global IPMICMD
     IPMICMD = ipmicommand
     for host in host_list:
         try:
             ipmisession = command.Command(host, 'admin', 'admin', onlogon=do_command)
+            ipmisess = True
         except gaierror as e:
             logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
+            ipmisess = False
         except IpmiException as e:
             logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
-    ipmisession.eventloop()
+            ipmisess = False
+    if ipmisess:
+        ipmisession.eventloop()
