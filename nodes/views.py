@@ -8,6 +8,8 @@ from django.core import serializers
 import simplejson as json
 from pyghmi.ipmi import command
 from pyghmi.exceptions import IpmiException
+from netaddr import IPAddress
+from netaddr import AddrFormatError
 
 from nodes.models import Site, Node
 
@@ -63,6 +65,11 @@ def do_command(result, ipmisession):
         logger.info('Executing command {0} in {1}'.format(command_, host))
         value = ipmisession.set_power('off', wait=True)
     logger.info('Executing OK for {0}'.format(host))
+    try:
+        host = IPAddress(host)
+        host = get_hostname_from_ip(host)
+    except AddrFormatError as e:
+        pass
     RESULT[host] = {'power': value.get('powerstate')}
 
 
@@ -76,9 +83,28 @@ def execute_ipmi_command(host_list, ipmicommand):
             ipmisess = True
         except gaierror as e:
             logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
-            ipmisess = False
+            hostip = get_ip_from_hostname(host)
+            logger.info('Trying with ip {0}'.format(hostip))
+            try:
+                ipmisession = command.Command(hostip, 'admin', 'admin', onlogon=do_command)
+            except IpmiException as e:
+                logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
+                ipmisess = False
+            ipmisess = True
         except IpmiException as e:
             logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
             ipmisess = False
     if ipmisess:
         ipmisession.eventloop()
+
+
+def get_ip_from_hostname(hostame):
+    hostn = hostame + '.aragrid.es'
+    ip = Node.objects.filter(hostname__exact=hostn).values_list('ip', flat=True).first()
+    return ip
+
+
+def get_hostname_from_ip(hostip):
+    hname = Node.objects.filter(ip__exact=hostip).values_list('hostname', flat=True).first()
+    shname = hname.split('.', 1)[0]
+    return shname
