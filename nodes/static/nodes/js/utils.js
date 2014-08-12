@@ -85,13 +85,14 @@ function check_all() {
         buttongo.prop("disabled", false);
         buttongo.text("Go (36)");
         selector.prop("disabled", false);
+        selector.find("option[id=empty]").remove();
         selector.find("option[id=status]").prop("selected", true);
     } else if (isanyselected == 36) {
         $("input:checkbox[name=hosts]").prop("checked", false);
         buttongo.prop("disabled", true);
         buttongo.text("Go (0)");
         selector.prop("disabled", true);
-        selector.find("option[id=empty]").prop("selected", true);
+        selector.find("option[id=up]").before("<option id=empty selected></option>");
     } else {
         $("input:checkbox[name=hosts]:not(:checked)").prop("checked", true);
         buttongo.text("Go (36)");
@@ -137,6 +138,7 @@ function checked_host() {
         buttongo.prop("disabled", false);
         buttongo.text("Go (" + nhosts + ")");
         selector.prop("disabled", false);
+        selector.find("option[id=empty]").remove();
         selector.find("option[id=status]").prop("selected", true);
         if (nhosts == 36) {
             $("#all_hosts").prop("checked", true);
@@ -147,6 +149,6 @@ function checked_host() {
         buttongo.text("Go (" + nhosts + ")");
         buttongo.prop("disabled", true);
         selector.prop("disabled", true);
-        selector.find("option[id=empty]").prop("selected", true);
+        selector.find("option[id=up]").before("<option id=empty selected></option>");
     }
 }
