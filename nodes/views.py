@@ -8,8 +8,6 @@ from django.core import serializers
 import simplejson as json
 from pyghmi.ipmi import command
 from pyghmi.exceptions import IpmiException
-from netaddr import IPAddress
-from netaddr import AddrFormatError
 
 from nodes.models import Site, Node
 
@@ -65,11 +63,8 @@ def do_command(result, ipmisession):
         logger.info('Executing command {0} in {1}'.format(command_, host))
         value = ipmisession.set_power('off', wait=True)
     logger.info('Executing OK for {0}'.format(host))
-    try:
-        host = IPAddress(host)
+    if not host.isalnum():
         host = get_hostname_from_ip(host)
-    except AddrFormatError as e:
-        pass
     RESULT[host] = {'power': value.get('powerstate')}
 
 
