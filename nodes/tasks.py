@@ -5,9 +5,8 @@ from pyghmi.ipmi import command
 from pyghmi.exceptions import IpmiException
 from socket import gaierror
 
-from nodes.views import get_ip_from_hostname, get_hostname_from_ip
-from nodes.views import logger
-
+from nodes.utils import get_hostname_from_ip, get_ip_from_hostname
+from configurator.settings import logger
 
 @shared_task
 def execute_ipmi_command(host_list, ipmicommand):
