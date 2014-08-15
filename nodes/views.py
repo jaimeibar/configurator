@@ -8,8 +8,6 @@ from nodes.models import Site, Node
 from nodes.tasks import execute_ipmi_command
 from configurator.settings import logger
 
-RESULT = {}
-
 
 def index(request):
     if request.is_ajax():
@@ -26,9 +24,9 @@ def index(request):
             logger.debug('Data: {0}'.format(data))
             rescmd = request.GET.getlist('cmd').pop()
             logger.info('Command: {0}'.format(rescmd))
-            execute_ipmi_command.delay(data, rescmd)
+            res = execute_ipmi_command.delay(data, rescmd)
             logger.info('Executing ipmi command')
-            jsondata = json.dumps(RESULT)
+            jsondata = json.dumps(res.get(timeout=1))
             logger.info('Json: {0}'.format(jsondata))
             return HttpResponse(jsondata, content_type='application/json')
     else:
