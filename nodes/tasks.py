@@ -8,6 +8,7 @@ from socket import gaierror
 from nodes.utils import get_hostname_from_ip, get_ip_from_hostname
 from configurator.settings import logger
 
+
 @shared_task
 def execute_ipmi_command(host_list, ipmicommand):
     result = {}
@@ -30,3 +31,4 @@ def execute_ipmi_command(host_list, ipmicommand):
             if not host.isalnum():
                 host = get_hostname_from_ip(hostip)
             result[host] = {'power': value.get('powerstate')}
+    return result
