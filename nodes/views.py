@@ -1,16 +1,14 @@
 import os.path
 import logging
-from socket import gaierror
 
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.core import serializers
 import simplejson as json
-from pyghmi.ipmi import command
-from pyghmi.exceptions import IpmiException
+
 
 from nodes.models import Site, Node
-
+from nodes.tasks import execute_ipmi_command
 
 RESULT = {}
 logger = logging.getLogger(os.path.basename(__name__))
@@ -31,7 +29,7 @@ def index(request):
             logger.debug('Data: {0}'.format(data))
             rescmd = request.GET.getlist('cmd').pop()
             logger.info('Command: {0}'.format(rescmd))
-            execute_ipmi_command(data, rescmd)
+            execute_ipmi_command.delay(data, rescmd)
             logger.info('Executing ipmi command')
             jsondata = json.dumps(RESULT)
             logger.info('Json: {0}'.format(jsondata))
@@ -40,7 +38,7 @@ def index(request):
         sites = Site.objects.all()
         return render(request, "nodes/index.html", {"listsites": sites})
 
-
+"""
 def do_command(result, ipmisession):
     host = ipmisession.bmc
     logger.info('Executing session for {0}'.format(host))
@@ -91,6 +89,7 @@ def execute_ipmi_command(host_list, ipmicommand):
             ipmisess = False
     if ipmisess:
         ipmisession.eventloop()
+"""
 
 
 def get_ip_from_hostname(hostame):

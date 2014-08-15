@@ -135,3 +135,9 @@ LOGGING = {
         }
     },
 }
+
+# Celery settings
+BROKER_URL = 'redis://'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_RESULT_BACKEND = 'redis://'
