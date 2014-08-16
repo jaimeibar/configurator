@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import logging
 
 from celery import shared_task
 from pyghmi.ipmi import command
@@ -6,7 +7,9 @@ from pyghmi.exceptions import IpmiException
 from socket import gaierror
 
 from nodes.utils import get_hostname_from_ip, get_ip_from_hostname
-from configurator.settings import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @shared_task
@@ -28,6 +31,15 @@ def execute_ipmi_command(host_list, ipmicommand):
         if ipmisession:
             if ipmicommand == 'status':
                 value = ipmisession.get_power()
+            elif ipmicommand == 'up':
+                logger.info(
+                    'Executing command {0} in {1}'.format(ipmicommand, host))
+                value = ipmisession.set_power('on', wait=True)
+            elif ipmicommand == 'down':
+                logger.info(
+                    'Executing command {0} in {1}'.format(ipmicommand, host))
+                value = ipmisession.set_power('off', wait=True)
+            logger.info('Executing OK for {0}'.format(host))
             if not host.isalnum():
                 host = get_hostname_from_ip(hostip)
             result[host] = {'power': value.get('powerstate')}
