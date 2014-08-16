@@ -1,13 +1,11 @@
 import time
 import logging
 
-
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.core import serializers
 import simplejson as json
 from celery.exceptions import TimeoutError
-
 
 from nodes.models import Site, Node
 from nodes.tasks import execute_ipmi_command
