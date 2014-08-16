@@ -36,7 +36,7 @@ def index(request):
             while True:
                 if res.state == 'SUCCESS':
                     try:
-                        outres = res.get(timeout=5)
+                        outres = res.get()
                         break
                     except TimeoutError as excp:
                         logger.error('Timeout error: {0}'.format(excp))
