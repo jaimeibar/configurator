@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from settings_secret import SECRET_KEY
-import logging
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -28,8 +27,6 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
-
-logger = logging.getLogger(os.path.basename(__name__))
 
 # Application definition
 
