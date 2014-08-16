@@ -1,7 +1,7 @@
 from __future__ import absolute_import
-import logging
 
 from celery import shared_task
+from celery.utils.log import get_task_logger
 from pyghmi.ipmi import command
 from pyghmi.exceptions import IpmiException
 from socket import gaierror
@@ -9,7 +9,7 @@ from socket import gaierror
 from nodes.utils import get_hostname_from_ip, get_ip_from_hostname
 
 
-logger = logging.getLogger(__name__)
+logger = get_task_logger(__name__)
 
 
 @shared_task
