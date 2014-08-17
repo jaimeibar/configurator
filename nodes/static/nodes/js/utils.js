@@ -45,6 +45,7 @@ function get_host() {
 function get_selected_hosts() {
     var allhosts = get_host();
     var command = $("#id-select-commands").val();
+    $("body").css("cursor", "progress");
     $.ajax({
         type: "GET",
         url: "/index",
@@ -72,6 +73,9 @@ function get_selected_hosts() {
         },
         error: function(data) {
             console.log("Error");
+        },
+        complete: function() {
+            $("body").css("cursor", "default");
         }
     });
 }
