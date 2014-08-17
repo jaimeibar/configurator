@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 def index(request):
     if request.is_ajax():
-        if "name" in request.GET:
-            name = request.GET.get("name")
+        if 'name' in request.GET:
+            name = request.GET.get('name')
             if name == "all":
                 wnodes = Node.objects.all()
             else:
@@ -30,6 +30,7 @@ def index(request):
             rescmd = request.GET.getlist('cmd').pop()
             logger.info('Command: {0}'.format(rescmd))
             res = execute_ipmi_command.delay(data, rescmd)
+            time.sleep(1)
             logger.info('Executing ipmi command')
             while True:
                 if res.state == 'SUCCESS':
