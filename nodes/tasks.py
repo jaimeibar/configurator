@@ -1,10 +1,10 @@
 from __future__ import absolute_import
+from socket import gaierror
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from pyghmi.ipmi import command
 from pyghmi.exceptions import IpmiException
-from socket import gaierror
 
 from nodes.utils import get_hostname_from_ip, get_ip_from_hostname
 
@@ -18,26 +18,28 @@ def execute_ipmi_command(host_list, ipmicommand):
     for host in host_list:
         try:
             ipmisession = command.Command(host, 'admin', 'admin')
+            ipmisess = True
         except gaierror as e:
             logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
             hostip = get_ip_from_hostname(host)
             logger.info('Trying with ip {0}'.format(hostip))
             try:
                 ipmisession = command.Command(hostip, 'admin', 'admin')
+                ipmisess = True
             except IpmiException as e:
                 logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
+                ipmisess = False
         except IpmiException as e:
             logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
-        if ipmisession:
+            ipmisess = False
+        if ipmisess:
             if ipmicommand == 'status':
                 value = ipmisession.get_power()
             elif ipmicommand == 'up':
-                logger.info(
-                    'Executing command {0} in {1}'.format(ipmicommand, host))
+                logger.info('Executing command {0} in {1}'.format(ipmicommand, host))
                 value = ipmisession.set_power('on', wait=True)
             elif ipmicommand == 'down':
-                logger.info(
-                    'Executing command {0} in {1}'.format(ipmicommand, host))
+                logger.info('Executing command {0} in {1}'.format(ipmicommand, host))
                 value = ipmisession.set_power('off', wait=True)
             logger.info('Executing OK for {0}'.format(host))
             if not host.isalnum():
