@@ -2,7 +2,7 @@ from nodes.models import Node
 
 
 def get_ip_from_hostname(hostame):
-    hostn = hostame + '.aragrid.es'
+    hostn = ''.join((hostame, '.aragrid.es'))
     ip = Node.objects.filter(hostname__exact=hostn).values_list('ip', flat=True).first()
     return ip
 
