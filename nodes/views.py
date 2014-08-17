@@ -40,6 +40,7 @@ def index(request):
                         logger.error('Timeout error: {0}'.format(excp))
                         time.sleep(5)
                 else:
+                    logger.info('Output not ready yet. Waiting 5 seconds')
                     time.sleep(5)
             jsondata = json.dumps(outres)
             logger.info('Json: {0}'.format(jsondata))
