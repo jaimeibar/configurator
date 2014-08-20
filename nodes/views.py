@@ -4,6 +4,7 @@ import logging
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.core import serializers
+from django.core.cache import cache
 import simplejson as json
 from celery.exceptions import TimeoutError
 
@@ -29,7 +30,9 @@ def index(request):
             logger.debug('Data: {0}'.format(data))
             rescmd = request.GET.getlist('cmd').pop()
             logger.info('Command: {0}'.format(rescmd))
-            res = execute_ipmi_command.delay(data, rescmd)
+            res = execute_ipmi_command.apply_async((data, rescmd))
+            logger.info('Cache info foo2: {0}'.format(cache.get('tid')))
+            logger.info('Session taskid: {0}'.format(res.id))
             time.sleep(1)
             logger.info('Executing ipmi command')
             while True:
@@ -46,6 +49,9 @@ def index(request):
             jsondata = json.dumps(outres)
             logger.info('Json: {0}'.format(jsondata))
             return HttpResponse(jsondata, content_type='application/json')
+        elif 'cancel' in request.GET:
+            logger.info('Cancelling tasks')
+            return HttpResponse(json.dumps({}), content_type='application/json')
     else:
         sites = Site.objects.all()
         return render(request, "nodes/index.html", {"listsites": sites})
