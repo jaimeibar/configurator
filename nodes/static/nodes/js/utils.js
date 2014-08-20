@@ -158,3 +158,16 @@ function checked_host() {
         selector.find("option[id=up]").before("<option id=empty selected></option>");
     }
 }
+
+function stop() {
+    $.ajax({
+        data: 'cancel',
+        type: "GET",
+        url: "/index",
+        dataType: "json",
+        traditional: true,
+        success: function(data) {
+            console.log("Success");
+        }
+    })
+}
