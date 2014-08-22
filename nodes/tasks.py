@@ -5,7 +5,6 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from pyghmi.ipmi import command
 from pyghmi.exceptions import IpmiException
-from django.core.cache import cache
 
 from nodes.utils import get_hostname_from_ip, get_ip_from_hostname
 
@@ -15,7 +14,6 @@ logger = get_task_logger(__name__)
 
 @shared_task(bind=True)
 def execute_ipmi_command(self, host_list, ipmicommand):
-    cache.set('tid', self.request.id)
     result = {}
     for host in host_list:
         try:
