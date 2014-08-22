@@ -41,7 +41,6 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.cache.UpdateCacheMiddleware',    # This must be first on the list
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,7 +50,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.staticfiles.storage.StaticFilesStorage',
-    'django.middleware.cache.FetchFromCacheMiddleware', # This must be last
 )
 
 ROOT_URLCONF = 'configurator.urls'
@@ -144,9 +142,5 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_RESULT_BACKEND = 'redis://'
 CELERY_TASK_RESULT_EXPIRES = 3600
-
-CACHES = {
-    'default': {
-        'BACKEND': 'redis_cache.RedisCache',
-    }
-}
+CELERY_DISABLE_RATE_LIMITS = True
+CELERY_SEND_TASK_SENT_EVENT = True
