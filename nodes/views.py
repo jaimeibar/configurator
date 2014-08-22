@@ -4,7 +4,6 @@ import logging
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.core import serializers
-from django.core.cache import cache
 import simplejson as json
 from celery.exceptions import TimeoutError
 
@@ -31,7 +30,6 @@ def index(request):
             rescmd = request.GET.getlist('cmd').pop()
             logger.info('Command: {0}'.format(rescmd))
             res = execute_ipmi_command.apply_async((data, rescmd))
-            logger.info('Cache info foo2: {0}'.format(cache.get('tid')))
             logger.info('Session taskid: {0}'.format(res.id))
             time.sleep(1)
             logger.info('Executing ipmi command')
