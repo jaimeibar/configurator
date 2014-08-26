@@ -34,9 +34,7 @@ def index(request):
             logger.info('Command: {0}'.format(rescmd))
             res = execute_ipmi_command.apply_async((data, rescmd))
             logger.info('Task id: {0}'.format(res.id))
-            with open(os.path.join('/tmp', 'session-{0}'.format(res.id)), 'w') as session:
-                session.write(res.id)
-                session.close()
+            manage_taskid(res.id)
             logger.info('Executing ipmi command')
             if res:
                 try:
@@ -51,13 +49,23 @@ def index(request):
                 return HttpResponse({}, content_type='application/json')
         elif 'cancel' in request.GET:
             logger.debug('Cancelling task')
-            tid = glob.glob(os.path.join('/tmp', 'session-*')).pop()
-            with open(tid) as sess:
-                t = sess.read().strip()
-                sess.close()
-            AsyncResult(t).revoke(terminate=True, signal='KILL')
-            os.unlink(tid)
+            tid = manage_taskid()
+            AsyncResult(tid).revoke(terminate=True, signal='KILL')
             return HttpResponse(json.dumps({}), content_type='application/json')
     else:
         sites = Site.objects.all()
         return render(request, "nodes/index.html", {"listsites": sites})
+
+
+def manage_taskid(taskid=None):
+    if taskid is not None:
+        with open(os.path.join('/tmp', 'taskid-{0}'.format(taskid)), 'w') as tfile:
+            tfile.write(taskid)
+            tfile.close()
+    else:
+        taskidfile = glob.glob(os.path.join('/tmp', 'taskid-*')).pop()
+        with open(taskidfile) as tfile:
+            taskid = tfile.read().strip()
+            tfile.close()
+        os.unlink(taskidfile)
+        return taskid
