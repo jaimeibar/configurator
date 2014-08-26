@@ -1,8 +1,13 @@
 import logging
+import os
+import os.path
+import glob
 
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.core import serializers
+from celery.result import AsyncResult
+from celery.exceptions import TaskRevokedError
 import simplejson as json
 
 from nodes.models import Site, Node
@@ -29,18 +34,29 @@ def index(request):
             logger.info('Command: {0}'.format(rescmd))
             res = execute_ipmi_command.apply_async((data, rescmd))
             logger.info('Task id: {0}'.format(res.id))
+            with open(os.path.join('/tmp', 'session-{0}'.format(res.id)), 'w') as session:
+                session.write(res.id)
+                session.close()
             logger.info('Executing ipmi command')
             if res:
-                jsondata = json.dumps(res.get())
-                logger.info('Json: {0}'.format(jsondata))
-                return HttpResponse(jsondata, content_type='application/json')
+                try:
+                    jsondata = json.dumps(res.get())
+                    logger.info('Json: {0}'.format(jsondata))
+                    return HttpResponse(jsondata, content_type='application/json')
+                except TaskRevokedError as excp:
+                    logger.debug('Task revoked: {0} ---- {1}'.format(res.id, excp))
+                    return HttpResponse({}, content_type='application/json')
             else:
                 logger.info('Task not finished yet')
                 return HttpResponse({}, content_type='application/json')
         elif 'cancel' in request.GET:
             logger.debug('Cancelling task')
-            # app.control.revoke(taskid, terminate=True, signal='KILL')
-            # AsyncResult(taskid).revoke(terminate=True, signal='KILL')
+            tid = glob.glob(os.path.join('/tmp', 'session-*')).pop()
+            with open(tid) as sess:
+                t = sess.read().strip()
+                sess.close()
+            AsyncResult(t).revoke(terminate=True, signal='KILL')
+            os.unlink(tid)
             return HttpResponse(json.dumps({}), content_type='application/json')
     else:
         sites = Site.objects.all()
