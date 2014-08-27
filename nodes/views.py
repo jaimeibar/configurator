@@ -44,6 +44,8 @@ def index(request):
                 except TaskRevokedError as excp:
                     logger.debug('Task revoked: {0} ---- {1}'.format(res.id, excp))
                     return HttpResponse({}, content_type='application/json')
+                finally:
+                    manage_taskid()
             else:
                 logger.info('Task not finished yet')
                 return HttpResponse({}, content_type='application/json')
@@ -63,9 +65,11 @@ def manage_taskid(taskid=None):
             tfile.write(taskid)
             tfile.close()
     else:
-        taskidfile = glob.glob(os.path.join('/tmp', 'taskid-*')).pop()
-        with open(taskidfile) as tfile:
-            taskid = tfile.read().strip()
-            tfile.close()
-        os.unlink(taskidfile)
-        return taskid
+        taskidfile = glob.glob(os.path.join('/tmp', 'taskid-*'))
+        if taskidfile:
+            taskidfile = taskidfile.pop()
+            with open(taskidfile) as tfile:
+                taskid = tfile.read().strip()
+                tfile.close()
+            os.unlink(taskidfile)
+            return taskid
