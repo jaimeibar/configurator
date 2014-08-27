@@ -76,6 +76,10 @@ function get_selected_hosts() {
         },
         complete: function() {
             $("body").css("cursor", "default");
+            $("#button_stop").prop("disabled", true);
+        },
+        beforeSend: function() {
+            $("#button_stop").prop("disabled", false);
         }
     });
 }
@@ -83,14 +87,12 @@ function get_selected_hosts() {
 function check_all() {
     var selector = $("#id-select-commands");
     var buttongo = $("#button_go");
-    var buttonstop = $("#button_stop");
     var hosts = $("input:checkbox[name=hosts]");
     var numberofhosts = hosts.length;
     var isanyselected = $("input:checkbox[name=hosts]:checked").length;
     if (isanyselected == 0) {
         hosts.prop("checked", true);
         buttongo.prop("disabled", false);
-        buttonstop.prop("disabled", false);
         buttongo.text("Go (" + numberofhosts + ")");
         selector.prop("disabled", false);
         selector.find("option[id=empty]").remove();
@@ -98,7 +100,6 @@ function check_all() {
     } else if (isanyselected == 36 || isanyselected == 144) {
         hosts.prop("checked", false);
         buttongo.prop("disabled", true);
-        buttonstop.prop("disabled", true);
         buttongo.text("Go (0)");
         selector.prop("disabled", true);
         selector.find("option[id=up]").before("<option id=empty selected></option>");
@@ -146,11 +147,9 @@ function manage_clear_button() {
 function checked_host() {
     var selector = $("#id-select-commands");
     var buttongo = $("#button_go");
-    var buttonstop = $("#button_stop");
     var nhosts = $("input:checkbox[name=hosts]:checked").length;
     if (nhosts > 0) {
         buttongo.prop("disabled", false);
-        buttonstop.prop("disabled", false);
         buttongo.text("Go (" + nhosts + ")");
         selector.prop("disabled", false);
         selector.find("option[id=empty]").remove();
@@ -163,7 +162,6 @@ function checked_host() {
     } else {
         buttongo.text("Go (" + nhosts + ")");
         buttongo.prop("disabled", true);
-        buttonstop.prop("disabled", true);
         selector.prop("disabled", true);
         selector.find("option[id=up]").before("<option id=empty selected></option>");
     }
