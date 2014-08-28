@@ -45,14 +45,19 @@ def index(request):
                     logger.debug('Task revoked: {0} ---- {1}'.format(taskd, excp))
                     return HttpResponse({}, content_type='application/json')
             elif m.failed():
-                logger.debug('Task failed: {0} -> {1}'.format(taskd, m.state))
+                logger.debug('Task failed: Id: {0} -> {1}'.format(taskd, m.state))
+                cancel_task(taskd)
                 return HttpResponse(json.dumps({'status': 'failed'}), content_type='application/json')
             return HttpResponse(json.dumps({}), content_type='application/json')
         elif 'cancel' in request.GET:
             tid = request.session.get('taskid')
-            logger.debug('Cancelling task: {0}'.format(tid))
-            AsyncResult(tid).revoke(terminate=True, signal='KILL')
+            cancel_task(tid)
             return HttpResponse(json.dumps({}), content_type='application/json')
     else:
         sites = Site.objects.all()
         return render(request, "nodes/index.html", {"listsites": sites})
+
+
+def cancel_task(taskid):
+    logger.debug('Cancelling task: {0}'.format(taskid))
+    AsyncResult(taskid).revoke(terminate=True, signal='KILL')
