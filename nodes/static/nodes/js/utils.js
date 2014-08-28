@@ -2,6 +2,10 @@
  * Created by jim on 12/03/14.
 */
 
+$(document).ready(function() {
+    var interval = null;
+});
+
 function get_selected(sname) {
     $.ajax({
         data: {
@@ -56,27 +60,10 @@ function get_selected_hosts() {
         },
         traditional: true,
         success: function(data) {
-            if ($.isEmptyObject(data)) {
-                console.log('No data received');
-            } else {
-                $.each(data, function(key, value) {
-                    var status = value.power;
-                    var tdstatus = $("td[id*='" + key + "s']");
-                    tdstatus.text(status);
-                    if (status == 'on') {
-                        tdstatus.addClass("onstatus");
-                    } else {
-                        tdstatus.addClass("offstatus");
-                    }
-                })
-            }
+            interval = setInterval(check_task_status, 5000);
         },
         error: function(data) {
             console.log("Error");
-        },
-        complete: function() {
-            $("body").css("cursor", "default");
-            $("#button_stop").prop("disabled", true);
         },
         beforeSend: function() {
             $("#button_stop").prop("disabled", false);
@@ -176,6 +163,41 @@ function stop() {
         traditional: true,
         success: function(data) {
             console.log("Success");
+            clearInterval(interval);
+        },
+        complete: function() {
+            $("body").css("cursor", "default");
         }
     })
+}
+
+function check_task_status() {
+    var request = $.ajax({
+        data: "status",
+        type: "GET",
+        url: "/index",
+        traditional: true,
+        success: function(data) {
+            if ($.isEmptyObject(data)) {
+                console.log("Task not ready yet");
+            } else {
+                clearInterval(interval);
+                $("#button_stop").prop("disabled", true);
+                $("body").css("cursor", "default");
+                $.each(data, function(key, value) {
+                    var status = value.power;
+                    var tdstatus = $("td[id*='" + key + "s']");
+                    tdstatus.text(status);
+                    if (status == 'on') {
+                        tdstatus.addClass("onstatus");
+                    } else {
+                        tdstatus.addClass("offstatus");
+                    }
+                })
+            }
+        },
+        error: function() {
+            clearInterval(interval);
+        }
+    });
 }
