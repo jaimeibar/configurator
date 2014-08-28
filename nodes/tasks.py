@@ -45,4 +45,7 @@ def execute_ipmi_command(self, host_list, ipmicommand):
             if not host.isalnum():
                 host = get_hostname_from_ip(hostip)
             result[host] = {'power': value.get('powerstate')}
+        else:
+            logger.info('Changing task status')
+            self.update_state(state='FAIL')
     return result
