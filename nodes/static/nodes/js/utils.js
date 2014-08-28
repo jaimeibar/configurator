@@ -180,6 +180,10 @@ function check_task_status() {
         success: function(data) {
             if ($.isEmptyObject(data)) {
                 console.log("Task not ready yet");
+            } else if (data.status == 'failed') {
+                clearInterval(interval);
+                $("body").css("cursor", "default");
+                $("#button_stop").prop("disabled", true);
             } else {
                 clearInterval(interval);
                 $("#button_stop").prop("disabled", true);
