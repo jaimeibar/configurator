@@ -37,13 +37,15 @@ def index(request):
         elif 'status' in request.GET:
             taskd = request.session.get('taskid')
             m = AsyncResult(taskd)
-            if m.ready():
+            if m.successful():
                 try:
                     taskresult = m.get()
                     return HttpResponse(json.dumps(taskresult), content_type='application/json')
                 except TaskRevokedError as excp:
                     logger.debug('Task revoked: {0} ---- {1}'.format(taskd, excp))
                     return HttpResponse({}, content_type='application/json')
+            else:
+                pass
             return HttpResponse(json.dumps({}), content_type='application/json')
         elif 'cancel' in request.GET:
             tid = request.session.get('taskid')
