@@ -44,8 +44,9 @@ def index(request):
                 except TaskRevokedError as excp:
                     logger.debug('Task revoked: {0} ---- {1}'.format(taskd, excp))
                     return HttpResponse({}, content_type='application/json')
-            else:
-                pass
+            elif m.failed():
+                logger.debug('Task failed: {0} -> {1}'.format(taskd, m.state))
+                return HttpResponse(json.dumps({'status': 'failed'}), content_type='application/json')
             return HttpResponse(json.dumps({}), content_type='application/json')
         elif 'cancel' in request.GET:
             tid = request.session.get('taskid')
