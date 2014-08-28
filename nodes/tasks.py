@@ -19,18 +19,18 @@ def execute_ipmi_command(self, host_list, ipmicommand):
         try:
             ipmisession = command.Command(host, 'admin', 'admin')
             ipmisess = True
-        except gaierror as e:
-            logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
+        except gaierror as excp:
+            logger.error('Error in ipmisession. Hostname: {0} -> {1}'.format(host, excp))
             hostip = get_ip_from_hostname(host)
             logger.info('Trying with ip {0}'.format(hostip))
             try:
                 ipmisession = command.Command(hostip, 'admin', 'admin')
                 ipmisess = True
-            except IpmiException as e:
-                logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
+            except IpmiException as excp:
+                logger.error('Error in ipmisession. Hostname: {0} - IP: {1} -> {2}'.format(host, hostip, excp))
                 ipmisess = False
-        except IpmiException as e:
-            logger.error('Error in ipmisession: host {0} - {1}'.format(host, e))
+        except IpmiException as excp:
+            logger.error('Error in ipmisession: host {0} -> {1}'.format(host, excp))
             ipmisess = False
         if ipmisess:
             if ipmicommand == 'status':
