@@ -60,7 +60,13 @@ function get_selected_hosts() {
         },
         traditional: true,
         success: function(data) {
-            interval = setInterval(check_task_status, 5000);
+            if ($.isEmptyObject(data)) {
+                interval = setInterval(check_task_status, 5000);
+            } else {
+                $("#button_stop").prop("disabled", true);
+                $("body").css("cursor", "default");
+                get_task_result(data);
+            }
         },
         error: function(data) {
             console.log("Error");
@@ -162,7 +168,6 @@ function stop() {
         dataType: "json",
         traditional: true,
         success: function(data) {
-            console.log("Success");
             clearInterval(interval);
         },
         complete: function() {
@@ -188,20 +193,24 @@ function check_task_status() {
                 clearInterval(interval);
                 $("#button_stop").prop("disabled", true);
                 $("body").css("cursor", "default");
-                $.each(data, function(key, value) {
-                    var status = value.power;
-                    var tdstatus = $("td[id*='" + key + "s']");
-                    tdstatus.text(status);
-                    if (status == 'on') {
-                        tdstatus.addClass("onstatus");
-                    } else {
-                        tdstatus.addClass("offstatus");
-                    }
-                })
+                get_task_result(data);
             }
         },
         error: function() {
             clearInterval(interval);
         }
     });
+}
+
+function get_task_result(data) {
+    $.each(data, function(key, value) {
+        var status = value.power;
+        var tdstatus = $("td[id*='" + key + "s']");
+        tdstatus.text(status);
+        if (status == 'on') {
+            tdstatus.addClass("onstatus");
+        } else {
+            tdstatus.addClass("offstatus");
+        }
+    })
 }
