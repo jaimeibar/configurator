@@ -1,4 +1,5 @@
 import logging
+import time
 
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -32,7 +33,11 @@ def index(request):
             res = execute_ipmi_command.apply_async((data, rescmd))
             logger.info('Task id: {0}'.format(res.id))
             logger.info('Executing ipmi command')
+            time.sleep(1)
             request.session['taskid'] = res.id
+            if res.successful():
+                result = res.get()
+                return HttpResponse(json.dumps(result), content_type='application/json')
             return HttpResponse(json.dumps({}), content_type='application/json')
         elif 'status' in request.GET:
             taskd = request.session.get('taskid')
@@ -40,6 +45,7 @@ def index(request):
             if m.successful():
                 try:
                     taskresult = m.get()
+                    logger.info('Task executed successfully. Getting result.')
                     return HttpResponse(json.dumps(taskresult), content_type='application/json')
                 except TaskRevokedError as excp:
                     logger.debug('Task revoked: {0} ---- {1}'.format(taskd, excp))
