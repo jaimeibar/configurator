@@ -1,9 +1,10 @@
 from __future__ import absolute_import
 from socket import gaierror
 
-from celery import shared_task, current_task
+from celery import shared_task
 from celery.utils.log import get_task_logger
 from celery.states import FAILURE
+from celery.exceptions import TimeoutError
 from pyghmi.ipmi import command
 from pyghmi.exceptions import IpmiException
 
@@ -13,8 +14,13 @@ from nodes.utils import get_hostname_from_ip, get_ip_from_hostname
 logger = get_task_logger(__name__)
 
 
-@shared_task(ignore_result=True)
-def execute_ipmi_command(host_list, ipmicommand):
+def set_task_failed(self, *args, **kwargs):
+    logger.error('Task execution failed: Aborting.')
+    self.update_state(state=FAILURE)
+
+
+@shared_task(bind=True, on_failure=set_task_failed)
+def execute_ipmi_command(self, host_list, ipmicommand):
     result = {}
     for host in host_list:
         try:
@@ -47,6 +53,5 @@ def execute_ipmi_command(host_list, ipmicommand):
                 host = get_hostname_from_ip(hostip)
             result[host] = {'power': value.get('powerstate')}
         else:
-            logger.info('Changing task status to fail')
-            current_task.update_state(state=FAILURE)
+            raise TimeoutError
     return result
