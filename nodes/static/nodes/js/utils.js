@@ -49,6 +49,7 @@ function get_host() {
 function get_selected_hosts() {
     var allhosts = get_host();
     var command = $("#id-select-commands").val();
+    manage_all_buttons(true);
     $("body").css("cursor", "progress");
     $.ajax({
         type: "GET",
@@ -61,11 +62,12 @@ function get_selected_hosts() {
         traditional: true,
         success: function(data) {
             if ($.isEmptyObject(data)) {
-                interval = setInterval(check_task_status, 5000);
+                interval = setInterval(check_task_status, 3000);
             } else {
                 $("#button_stop").prop("disabled", true);
                 $("body").css("cursor", "default");
                 get_task_result(data);
+                manage_all_buttons(false);
             }
         },
         error: function(data) {
@@ -115,14 +117,15 @@ function clear_page() {
 function manage_go_button() {
     var buttongo = $("#button_go");
     var isdisabled = buttongo.prop("disabled");
-    if (isdisabled == true) {
+    if (isdisabled) {
         if ($("input:checkbox[name=hosts]:checked").length == 0) {
             buttongo.prop("disabled", true);
         } else {
             buttongo.prop("disabled", false);
         }
     } else {
-        buttongo.text("Go (0)");
+        var numenabled = $("input:checkbox[name=hosts]:checked").length;
+        buttongo.text("Go (" + numenabled + ")");
         buttongo.prop("disabled", true);
     }
 }
@@ -172,12 +175,13 @@ function stop() {
         },
         complete: function() {
             $("body").css("cursor", "default");
+            manage_all_buttons(false);
         }
     })
 }
 
 function check_task_status() {
-    var request = $.ajax({
+    $.ajax({
         data: "status",
         type: "GET",
         url: "/index",
@@ -189,15 +193,18 @@ function check_task_status() {
                 clearInterval(interval);
                 $("body").css("cursor", "default");
                 $("#button_stop").prop("disabled", true);
+                manage_all_buttons(false);
             } else {
                 clearInterval(interval);
                 $("#button_stop").prop("disabled", true);
                 $("body").css("cursor", "default");
                 get_task_result(data);
+                manage_all_buttons(false);
             }
         },
         error: function() {
             clearInterval(interval);
+            manage_all_buttons(false);
         }
     });
 }
@@ -213,4 +220,16 @@ function get_task_result(data) {
             tdstatus.addClass("offstatus");
         }
     })
+}
+
+function manage_all_buttons(flag) {
+    manage_go_button();
+    manage_clear_button();
+    $("#Bifi").prop("disabled", flag);
+    $("#Ciencias").prop("disabled", flag);
+    $("#EPSH").prop("disabled", flag);
+    $("#EUPT").prop("disabled", flag);
+    $("#all").prop("disabled", flag);
+    $("#button_clear").prop("disabled", flag);
+    $("#id-select-commands").prop("disabled", flag);
 }
