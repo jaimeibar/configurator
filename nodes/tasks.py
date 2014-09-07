@@ -20,38 +20,37 @@ def set_task_failed(self, *args, **kwargs):
 
 
 @shared_task(bind=True, on_failure=set_task_failed)
-def execute_ipmi_command(self, host_list, ipmicommand):
+def execute_ipmi_command(self, host, ipmicommand):
     result = {}
-    for host in host_list:
+    try:
+        ipmisession = command.Command(host, 'admin', 'admin')
+        ipmisess = True
+    except gaierror as excp:
+        logger.error('Error in ipmisession. Hostname: {0} -> {1}'.format(host, excp))
+        hostip = get_ip_from_hostname(host)
+        logger.info('Trying with ip {0}'.format(hostip))
         try:
-            ipmisession = command.Command(host, 'admin', 'admin')
+            ipmisession = command.Command(hostip, 'admin', 'admin')
             ipmisess = True
-        except gaierror as excp:
-            logger.error('Error in ipmisession. Hostname: {0} -> {1}'.format(host, excp))
-            hostip = get_ip_from_hostname(host)
-            logger.info('Trying with ip {0}'.format(hostip))
-            try:
-                ipmisession = command.Command(hostip, 'admin', 'admin')
-                ipmisess = True
-            except IpmiException as excp:
-                logger.error('Error in ipmisession. Hostname: {0} - IP: {1} -> {2}'.format(host, hostip, excp))
-                ipmisess = False
         except IpmiException as excp:
-            logger.error('Error in ipmisession: host {0} -> {1}'.format(host, excp))
+            logger.error('Error in ipmisession. Hostname: {0} - IP: {1} -> {2}'.format(host, hostip, excp))
             ipmisess = False
-        if ipmisess:
-            if ipmicommand == 'status':
-                value = ipmisession.get_power()
-            elif ipmicommand == 'up':
-                logger.info('Executing command {0} in {1}'.format(ipmicommand, host))
-                value = ipmisession.set_power('on', wait=True)
-            elif ipmicommand == 'down':
-                logger.info('Executing command {0} in {1}'.format(ipmicommand, host))
-                value = ipmisession.set_power('off', wait=True)
-            logger.info('Executing OK for {0}'.format(host))
-            if not host.isalnum():
-                host = get_hostname_from_ip(hostip)
-            result[host] = {'power': value.get('powerstate')}
-        else:
-            raise TimeoutError
+    except IpmiException as excp:
+        logger.error('Error in ipmisession: host {0} -> {1}'.format(host, excp))
+        ipmisess = False
+    if ipmisess:
+        if ipmicommand == 'status':
+            value = ipmisession.get_power()
+        elif ipmicommand == 'up':
+            logger.info('Executing command {0} in {1}'.format(ipmicommand, host))
+            value = ipmisession.set_power('on', wait=True)
+        elif ipmicommand == 'down':
+            logger.info('Executing command {0} in {1}'.format(ipmicommand, host))
+            value = ipmisession.set_power('off', wait=True)
+        logger.info('Executing OK for {0}'.format(host))
+        if not host.isalnum():
+            host = get_hostname_from_ip(hostip)
+        result[host] = {'power': value.get('powerstate')}
+    else:
+        raise TimeoutError
     return result
