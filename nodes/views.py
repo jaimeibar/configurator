@@ -4,8 +4,9 @@ import time
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.core import serializers
-from celery.result import AsyncResult
+from celery.result import AsyncResult, GroupResult
 from celery.exceptions import TaskRevokedError
+from celery import group
 import simplejson as json
 
 from nodes.models import Site, Node
@@ -26,32 +27,34 @@ def index(request):
             json_ = serializers.serialize('json', wnodes, fields=('hostname', 'ip'))
             return HttpResponse(json_, content_type="application/json")
         elif 'selectedhosts' in request.GET:
-            data = request.GET.getlist('selectedhosts')
-            logger.debug('Data: {0}'.format(data))
+            hosts = request.GET.getlist('selectedhosts')
+            logger.debug('Hosts: {0}'.format(hosts))
             rescmd = request.GET.getlist('cmd').pop()
             logger.info('Command: {0}'.format(rescmd))
-            res = execute_ipmi_command.apply_async((data, rescmd))
-            logger.info('Task id: {0}'.format(res.id))
+            grouptask = group(execute_ipmi_command.s(host, rescmd) for host in hosts)()
+            logger.info('Group task id: {0}'.format(grouptask.id))
             logger.info('Executing ipmi command')
             time.sleep(1)
-            request.session['taskid'] = res.id
-            if res.successful():
-                result = res.get()
+            request.session['taskid'] = grouptask.id
+            if grouptask.successful():
+                result = grouptask.get()
                 return HttpResponse(json.dumps(result), content_type='application/json')
-            return HttpResponse(json.dumps({}), content_type='application/json')
+            else:
+                grouptask.save()
+                return HttpResponse(json.dumps({}), content_type='application/json')
         elif 'status' in request.GET:
             taskd = request.session.get('taskid')
-            m = AsyncResult(taskd)
-            if m.successful():
+            gtask = GroupResult.restore(taskd)
+            if gtask.successful():
                 try:
-                    taskresult = m.get()
+                    taskresult = gtask.get()
                     logger.info('Task executed successfully. Getting result.')
                     return HttpResponse(json.dumps(taskresult), content_type='application/json')
                 except TaskRevokedError as excp:
                     logger.debug('Task revoked: {0} ---- {1}'.format(taskd, excp))
                     return HttpResponse({}, content_type='application/json')
-            elif m.failed():
-                logger.debug('Task failed: Id: {0} -> {1}'.format(taskd, m.state))
+            elif gtask.failed():
+                logger.debug('Task failed: Id: {0}'.format(taskd))
                 cancel_task(taskd)
                 return HttpResponse(json.dumps({'status': 'failed'}), content_type='application/json')
             return HttpResponse(json.dumps({}), content_type='application/json')
@@ -65,5 +68,9 @@ def index(request):
 
 
 def cancel_task(taskid):
-    logger.debug('Cancelling task: {0}'.format(taskid))
-    AsyncResult(taskid).revoke(terminate=True, signal='KILL')
+    logger.debug('Cancelling group task: {0}'.format(taskid))
+    grtask = GroupResult.restore(taskid)
+    for subtask in grtask.children:
+        logger.debug('Cancelling task: {0}'.format(subtask.id))
+        AsyncResult(subtask.id).revoke(terminate=True, signal='KILL')
+
