@@ -211,14 +211,16 @@ function check_task_status() {
 
 function get_task_result(data) {
     $.each(data, function(key, value) {
-        var status = value.power;
-        var tdstatus = $("td[id*='" + key + "s']");
-        tdstatus.text(status);
-        if (status == 'on') {
-            tdstatus.addClass("onstatus");
-        } else {
-            tdstatus.addClass("offstatus");
-        }
+        $.each(value, function (k, v) {
+            var status = v.power;
+            var tdstatus = $("td[id*='" + k + "s']");
+            tdstatus.text(status);
+            if (status == 'on') {
+                tdstatus.addClass("onstatus");
+            } else {
+                tdstatus.addClass("offstatus");
+            }
+        })
     })
 }
 
