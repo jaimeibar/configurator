@@ -38,6 +38,7 @@ def index(request):
             request.session['taskid'] = grouptask.id
             if grouptask.successful():
                 result = grouptask.get()
+                logger.info('Task executed successfully. Getting result.')
                 return HttpResponse(json.dumps(result), content_type='application/json')
             else:
                 grouptask.save()
