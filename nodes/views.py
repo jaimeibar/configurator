@@ -58,7 +58,12 @@ def index(request):
                 logger.debug('Task failed: Id: {0}'.format(taskd))
                 cancel_task(taskd)
                 return HttpResponse(json.dumps({'status': 'failed'}), content_type='application/json')
-            return HttpResponse(json.dumps({}), content_type='application/json')
+            elif gtask.waiting():
+                logger.info('Task waiting. Trying getting partials.')
+                partials = get_partial_results(taskd)
+                partials.insert(0, {'status': 'waiting'})
+                logger.info('Partials: {0}'.format(partials))
+                return HttpResponse(json.dumps(partials), content_type='application/json')
         elif 'cancel' in request.GET:
             tid = request.session.get('taskid')
             cancel_task(tid)
@@ -75,3 +80,10 @@ def cancel_task(taskid):
         logger.debug('Cancelling task: {0}'.format(subtask.id))
         AsyncResult(subtask.id).revoke(terminate=True, signal='KILL')
 
+
+def get_partial_results(taskid):
+    logger.info('Getting subtask results for group task: {0}'.format(taskid))
+    grtask = GroupResult.restore(taskid)
+    result = [subtask.info for subtask in grtask.children if subtask.status == 'SUCCESS']
+    logger.info('Subtasks finished: {0}'.format(result))
+    return result
