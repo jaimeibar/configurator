@@ -35,12 +35,12 @@ def index(request):
             logger.info('Group task id: {0}'.format(grouptask.id))
             logger.info('Executing ipmi command')
             time.sleep(1)
-            request.session['taskid'] = grouptask.id
             if grouptask.successful():
                 result = grouptask.get()
                 logger.info('Task executed successfully. Getting result.')
                 return HttpResponse(json.dumps(result), content_type='application/json')
             else:
+                request.session['taskid'] = grouptask.id
                 grouptask.save()
                 return HttpResponse(json.dumps({}), content_type='application/json')
         elif 'status' in request.GET:
