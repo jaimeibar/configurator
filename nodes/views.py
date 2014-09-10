@@ -60,7 +60,11 @@ def index(request):
                 return HttpResponse(json.dumps({'status': 'failed'}), content_type='application/json')
             elif gtask.waiting():
                 logger.info('Task waiting. Trying getting partials.')
-                partials = get_partial_results(taskd)
+                taskid = request.session.get('taskid')
+                grtask = GroupResult.restore(taskid)
+                subtasks = list(grtask.subtasks)
+                partials = get_partial_results(subtasks, taskid)
+                request.session[taskid] = partials
                 partials.insert(0, {'status': 'waiting'})
                 logger.info('Partials: {0}'.format(partials))
                 return HttpResponse(json.dumps(partials), content_type='application/json')
@@ -81,9 +85,20 @@ def cancel_task(taskid):
         AsyncResult(subtask.id).revoke(terminate=True, signal='KILL')
 
 
-def get_partial_results(taskid):
+def get_partial_results(subtasks, taskid):
+    results = []
+    logger.info('Subtasks remaining: {0}'.format(len(subtasks)))
     logger.info('Getting subtask results for group task: {0}'.format(taskid))
-    grtask = GroupResult.restore(taskid)
-    result = [subtask.info for subtask in grtask.children if subtask.status == 'SUCCESS']
-    logger.info('Subtasks finished: {0}'.format(result))
-    return result
+    logger.info('Subtasks list: {0}'.format(subtasks))
+    for subtask in subtasks:
+        if subtask.status == 'SUCCESS':
+            logger.info('Subtask finished: {0}'.format(subtask))
+            logger.info('Adding subtask to results: {0}'.format(subtask))
+            results.append(subtask.info)
+            logger.info('Deleting subtask from subtasks list: {0}'.format(subtask))
+            subtasks.remove(subtask)
+    if subtasks:
+        logger.info('Subtasks not finished yet: {0}'.format(subtasks))
+    else:
+        logger.info('Subtasks finished: {0}'.format(results))
+    return results
