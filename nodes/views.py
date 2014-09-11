@@ -65,7 +65,7 @@ def index(request):
                     subtasksids = request.session.get(taskid)
                 else:
                     grtask = GroupResult.restore(taskid)
-                    subtasksids = [taid.id for taid in list(grtask.subtasks)]
+                    subtasksids = [taid.id for taid in grtask.subtasks]
                 partialsres, tasksrem = get_partial_results(subtasksids)
                 partialsres.insert(0, {'status': 'waiting'})
                 logger.info('Partials: {0}'.format(partialsres))
