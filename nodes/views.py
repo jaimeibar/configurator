@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.core import serializers
 from celery.result import AsyncResult, GroupResult
 from celery.exceptions import TaskRevokedError
+from celery.states import PENDING, FAILURE
 from celery import group
 import simplejson as json
 
@@ -41,11 +42,27 @@ def index(request):
                 return HttpResponse(json.dumps(result), content_type='application/json')
             else:
                 request.session['taskid'] = grouptask.id
-                grouptask.save()
+                request.session[grouptask.id] = [taid.id for taid in grouptask.subtasks]
                 return HttpResponse(json.dumps({}), content_type='application/json')
         elif 'status' in request.GET:
+            result = []
             taskd = request.session.get('taskid')
-            gtask = GroupResult.restore(taskd)
+            stids = request.session.get(taskd)
+            for stask in stids:
+                res = check_subtask_status(stask)
+                if res:
+                    result.append(res)
+                    stids.remove(stask)
+                elif res == FAILURE:
+                    logger.info('Removing subtask from list: {0}'.format(stask))
+                    stids.remove(stask)
+                    return HttpResponse(json.dumps({'status': 'failed'}), content_type='application/json')
+                elif res == PENDING:
+                    return HttpResponse(json.dumps({'status': 'waiting'}), content_type='application/json')
+
+            return HttpResponse(json.dumps(result), content_type='application/json')
+
+            """
             if gtask.successful():
                 try:
                     taskresult = gtask.get()
@@ -72,6 +89,7 @@ def index(request):
                 if tasksrem:
                     request.session[taskid] = tasksrem
                 return HttpResponse(json.dumps(partialsres), content_type='application/json')
+                """
         elif 'cancel' in request.GET:
             tid = request.session.get('taskid')
             cancel_task(tid)
@@ -82,28 +100,21 @@ def index(request):
 
 
 def cancel_task(taskid):
-    logger.debug('Cancelling group task: {0}'.format(taskid))
-    grtask = GroupResult.restore(taskid)
-    for subtask in grtask.children:
-        logger.debug('Cancelling task: {0}'.format(subtask.id))
-        AsyncResult(subtask.id).revoke(terminate=True, signal='KILL')
+    logger.debug('Cancelling subtask: {0}'.format(taskid))
+    logger.debug('Cancelling task: {0}'.format(taskid))
+    AsyncResult(taskid).revoke(terminate=True, signal='KILL')
 
 
-def get_partial_results(subtasks):
-    results = []
-    logger.info('Subtasks remaining: {0}'.format(len(subtasks)))
-    logger.info('Subtasks list: {0}'.format(subtasks))
-    for subtaskid in subtasks:
-        tk = AsyncResult(subtaskid)
-        if tk.successful():
-            logger.info('Subtask finished. Adding to results: {0}'.format(subtaskid))
-            results.append(tk.get())
-            logger.info('Deleting subtask from subtasks list: {0}'.format(subtaskid))
-            subtasks.remove(subtaskid)
-    if subtasks:
-        logger.info('Subtasks not finished yet: {0}'.format(len(subtasks)))
-        logger.info('Subtasks not finished yet: {0}'.format(subtasks))
-        return results, subtasks
-    else:
-        logger.info('Subtasks finished: {0}'.format(results))
-        return results
+def check_subtask_status(subtaskid):
+    logger.info('Checking subtask: {0}'.format(subtaskid))
+    tk = AsyncResult(subtaskid)
+    if tk.successful():
+        logger.info('Subtask finished: {0}'.format(subtaskid))
+        return tk.get()
+    elif tk.state == PENDING:
+        logger.info('Subtask not finished yet: {0}'.format(subtaskid))
+        return PENDING
+    elif tk.state == FAILURE:
+        logger.info('Subtask failed: {0}'.format(subtaskid))
+        cancel_task(subtaskid)
+        return FAILURE
