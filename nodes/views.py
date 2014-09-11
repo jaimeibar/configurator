@@ -61,13 +61,17 @@ def index(request):
             elif gtask.waiting():
                 logger.info('Task waiting. Trying getting partials.')
                 taskid = request.session.get('taskid')
-                grtask = GroupResult.restore(taskid)
-                subtasks = list(grtask.subtasks)
-                partials = get_partial_results(subtasks, taskid)
-                request.session[taskid] = partials
-                partials.insert(0, {'status': 'waiting'})
-                logger.info('Partials: {0}'.format(partials))
-                return HttpResponse(json.dumps(partials), content_type='application/json')
+                if request.session.get(taskid):
+                    subtasksids = request.session.get(taskid)
+                else:
+                    grtask = GroupResult.restore(taskid)
+                    subtasksids = [taid.id for taid in list(grtask.subtasks)]
+                partialsres, tasksrem = get_partial_results(subtasksids)
+                partialsres.insert(0, {'status': 'waiting'})
+                logger.info('Partials: {0}'.format(partialsres))
+                if tasksrem:
+                    request.session[taskid] = tasksrem
+                return HttpResponse(json.dumps(partialsres), content_type='application/json')
         elif 'cancel' in request.GET:
             tid = request.session.get('taskid')
             cancel_task(tid)
@@ -85,20 +89,21 @@ def cancel_task(taskid):
         AsyncResult(subtask.id).revoke(terminate=True, signal='KILL')
 
 
-def get_partial_results(subtasks, taskid):
+def get_partial_results(subtasks):
     results = []
     logger.info('Subtasks remaining: {0}'.format(len(subtasks)))
-    logger.info('Getting subtask results for group task: {0}'.format(taskid))
     logger.info('Subtasks list: {0}'.format(subtasks))
-    for subtask in subtasks:
-        if subtask.status == 'SUCCESS':
-            logger.info('Subtask finished: {0}'.format(subtask))
-            logger.info('Adding subtask to results: {0}'.format(subtask))
-            results.append(subtask.info)
-            logger.info('Deleting subtask from subtasks list: {0}'.format(subtask))
-            subtasks.remove(subtask)
+    for subtaskid in subtasks:
+        tk = AsyncResult(subtaskid)
+        if tk.successful():
+            logger.info('Subtask finished. Adding to results: {0}'.format(subtaskid))
+            results.append(tk.get())
+            logger.info('Deleting subtask from subtasks list: {0}'.format(subtaskid))
+            subtasks.remove(subtaskid)
     if subtasks:
+        logger.info('Subtasks not finished yet: {0}'.format(len(subtasks)))
         logger.info('Subtasks not finished yet: {0}'.format(subtasks))
+        return results, subtasks
     else:
         logger.info('Subtasks finished: {0}'.format(results))
-    return results
+        return results
