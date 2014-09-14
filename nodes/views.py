@@ -46,8 +46,8 @@ def index(request):
                 return HttpResponse(json.dumps({}), content_type='application/json')
         elif 'status' in request.GET:
             result = []
-            taskd = request.session.get('taskid')
-            stids = request.session.get(taskd)
+            gtaskid = request.session.get('taskid')
+            stids = request.session.get(gtaskid)
             for stask in stids:
                 res = check_subtask_status(stask)
                 if isinstance(res, dict):
@@ -67,7 +67,7 @@ def index(request):
                 result.insert(0, {'status': 'complete'})
                 logger.info('Task executed successfully.')
                 return HttpResponse(json.dumps(result), content_type='application/json')
-            request.session[taskd] = stids
+            request.session[gtaskid] = stids
             return HttpResponse(json.dumps(result), content_type='application/json')
         elif 'cancel' in request.GET:
             tid = request.session.get('taskid')
