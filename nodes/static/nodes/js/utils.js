@@ -187,22 +187,18 @@ function check_task_status() {
         url: "/index",
         traditional: true,
         success: function(data) {
-            var checkstatus = $(data).get(0);
             if ($.isEmptyObject(data)) {
                 console.log("Task not ready yet");
-            } else if (checkstatus.status == 'failed') {
-                clearInterval(interval);
-                $("body").css("cursor", "default");
-                $("#button_stop").prop("disabled", true);
-                manage_all_buttons(false);
-            } else if (checkstatus.status == 'waiting') {
-                get_task_result(data);
             } else {
-                $("#button_stop").prop("disabled", true);
-                $("body").css("cursor", "default");
-                clearInterval(interval);
-                get_task_result(data);
-                manage_all_buttons(false);
+                var checkstatus = $(data).get(0);
+                if (checkstatus.status == 'complete') {
+                    clearInterval(interval);
+                    $("body").css("cursor", "default");
+                    manage_all_buttons(false);
+                    get_task_result(data);
+                } else {
+                    get_task_result(data);
+                }
             }
         },
         error: function() {
