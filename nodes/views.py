@@ -41,7 +41,9 @@ def index(request):
                 logger.info('Task executed successfully. Getting result.')
                 return HttpResponse(json.dumps(result), content_type='application/json')
             else:
+                # GroupTask id
                 request.session['taskid'] = grouptask.id
+                # Subtasks id's of the GroupTask
                 request.session[grouptask.id] = [taid.id for taid in grouptask.subtasks]
                 return HttpResponse(json.dumps({}), content_type='application/json')
         elif 'status' in request.GET:
