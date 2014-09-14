@@ -45,6 +45,7 @@ def index(request):
                 request.session['taskid'] = grouptask.id
                 # Subtasks id's of the GroupTask
                 request.session[grouptask.id] = [taid.id for taid in grouptask.subtasks]
+                grouptask.save()
                 return HttpResponse(json.dumps({}), content_type='application/json')
         elif 'status' in request.GET:
             result = []
@@ -73,8 +74,12 @@ def index(request):
             return HttpResponse(json.dumps(result), content_type='application/json')
         elif 'cancel' in request.GET:
             gtaskid = request.session.get('taskid')
+            grtask = GroupResult.restore(gtaskid)
             subtasks = request.session.get(gtaskid)
-            cancel_task(subtasks)
+            if len(grtask.subtasks) == len(subtasks):
+                cancel_task(gtaskid)
+            else:
+                cancel_task(subtasks)
             return HttpResponse(json.dumps({}), content_type='application/json')
     else:
         sites = Site.objects.all()
@@ -82,10 +87,16 @@ def index(request):
 
 
 def cancel_task(taskid):
-    # Taskid is an subtasks id's list
-    for stask in taskid:
-        logger.debug('Cancelling subtask: {0}'.format(stask))
-        AsyncResult(stask).revoke(terminate=True, signal='KILL')
+    if isinstance(taskid, list):
+        # taskid is an subtasks id's list
+        for stask in taskid:
+            logger.info('Cancelling subtask: {0}'.format(stask))
+            AsyncResult(stask).revoke(terminate=True, signal='KILL')
+    else:
+        # taskid is a GroupResult
+        logger.info('Canceling group task: {0}'.format(taskid))
+        gtask = GroupResult.restore(taskid)
+        gtask.revoke(terminate=True, signal='KILL')
 
 
 def check_subtask_status(subtaskid):
