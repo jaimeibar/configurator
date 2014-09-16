@@ -21,10 +21,7 @@ def index(request):
     if request.is_ajax():
         if 'name' in request.GET:
             name = request.GET.get('name')
-            if name == "all":
-                wnodes = Node.objects.all()
-            else:
-                wnodes = Node.objects.filter(site__sitename__exact=name)
+            wnodes = Node.objects.all() if name == 'all' else Node.objects.filter(site__sitename__exact=name)
             json_ = serializers.serialize('json', wnodes, fields=('hostname', 'ip'))
             return HttpResponse(json_, content_type="application/json")
         elif 'selectedhosts' in request.GET:
