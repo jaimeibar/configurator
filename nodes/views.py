@@ -18,6 +18,11 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
+    """
+    Main view.
+    :param request: Http request
+    :return: json content.
+    """
     if request.is_ajax():
         if 'name' in request.GET:
             name = request.GET.get('name')
@@ -84,8 +89,14 @@ def index(request):
 
 
 def cancel_task(taskid):
+    """
+    Cancel a task depending on taskid parameter.
+    The taskid can be a list of subtasks id's or
+    the gruoptask id.
+    :param taskid: Task id.
+    """
     if isinstance(taskid, list):
-        # taskid is an subtasks id's list
+        # taskid is a subtasks id's list
         for stask in taskid:
             logger.info('Cancelling subtask: {0}'.format(stask))
             AsyncResult(stask).revoke(terminate=True, signal='KILL')
@@ -97,6 +108,11 @@ def cancel_task(taskid):
 
 
 def check_subtask_status(subtaskid):
+    """
+    Check the status of the subtask.
+    :param subtaskid: Subtask id.
+    :return: The status of the subtask.
+    """
     logger.info('Checking subtask: {0}'.format(subtaskid))
     tk = AsyncResult(subtaskid)
     if tk.successful():
