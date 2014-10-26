@@ -4,7 +4,6 @@ from socket import gaierror
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from celery.states import FAILURE
-from celery.exceptions import TimeoutError
 from pyghmi.ipmi import command
 from pyghmi.exceptions import IpmiException
 
@@ -19,7 +18,7 @@ def set_task_failed(self, *args, **kwargs):
     self.update_state(state=FAILURE)
 
 
-@shared_task(bind=True, on_failure=set_task_failed)
+@shared_task(bind=True, on_failure=set_task_failed, default_retry_delay=30)
 def execute_ipmi_command(self, host, ipmicommand):
     result = {}
     try:
@@ -40,7 +39,12 @@ def execute_ipmi_command(self, host, ipmicommand):
         ipmisess = False
     if ipmisess:
         if ipmicommand == 'status':
-            value = ipmisession.get_power()
+            try:
+                value = ipmisession.get_power()
+            except IpmiException as excp:
+                # Timeout exception
+                logger.error('Timeout exception. Retrying.')
+                self.retry(exc=excp)
         elif ipmicommand == 'up':
             logger.info('Executing command {0} in {1}'.format(ipmicommand, host))
             value = ipmisession.set_power('on', wait=True)
@@ -51,6 +55,8 @@ def execute_ipmi_command(self, host, ipmicommand):
         if not host.isalnum():
             host = get_hostname_from_ip(hostip)
         result[host] = {'power': value.get('powerstate')}
+        return result
     else:
-        raise TimeoutError
-    return result
+        logger.error('No ipmisession established for host: {0}'.format(host))
+        logger.error('Retrying')
+        self.retry()
