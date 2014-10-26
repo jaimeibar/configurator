@@ -14,6 +14,7 @@ function get_selected(sname) {
         url: "/index",
         dataType: "json",
         success: function(data) {
+            manage_clear_button(false);
             var divhostlist = $("#div_hostlist");
             if ($("#table_hosts").length != 0) {
                 divhostlist.empty();
@@ -34,7 +35,6 @@ function get_selected(sname) {
             });
         }
     });
-    $("#button_clear").prop("disabled", false);
 }
 
 function get_host() {
@@ -48,7 +48,7 @@ function get_host() {
 
 function get_selected_hosts() {
     var allhosts = get_host();
-    var command = $("#id-select-commands").val();
+    var command = $("#commands").val();
     manage_all_buttons(true);
     $("body").css("cursor", "progress");
     $.ajax({
@@ -64,7 +64,7 @@ function get_selected_hosts() {
             if ($.isEmptyObject(data)) {
                 interval = setInterval(check_task_status, 3000);
             } else {
-                $("#button_stop").prop("disabled", true);
+                $("#stop").prop("disabled", true);
                 $("body").css("cursor", "default");
                 get_task_result(data);
                 manage_all_buttons(false);
@@ -74,14 +74,14 @@ function get_selected_hosts() {
             console.log("Error");
         },
         beforeSend: function() {
-            $("#button_stop").prop("disabled", false);
+            $("#stop").prop("disabled", false);
         }
     });
 }
 
 function check_all() {
-    var selector = $("#id-select-commands");
-    var buttongo = $("#button_go");
+    var selector = $("#commands");
+    var buttongo = $("#go");
     var hosts = $("input:checkbox[name=hosts]");
     var numberofhosts = hosts.length;
     var isanyselected = $("input:checkbox[name=hosts]:checked").length;
@@ -105,17 +105,17 @@ function check_all() {
 }
 
 function clear_page() {
-    var selector = $("#id-select-commands");
+    var selector = $("#commands");
     $("#div_hostlist").empty();
     manage_go_button();
-    manage_clear_button();
-    $("#button_stop").prop("disabled", true);
+    manage_clear_button(true);
+    $("#stop").prop("disabled", true);
     selector.prop("disabled", true);
     selector.find("option[id=up]").before("<option id=empty selected></option>");
 }
 
 function manage_go_button() {
-    var buttongo = $("#button_go");
+    var buttongo = $("#go");
     var isdisabled = buttongo.prop("disabled");
     if (isdisabled) {
         if ($("input:checkbox[name=hosts]:checked").length == 0) {
@@ -130,19 +130,14 @@ function manage_go_button() {
     }
 }
 
-function manage_clear_button() {
-    var clearbtn = $("#button_clear");
-    var isdisabled = clearbtn.prop("disabled");
-    if (isdisabled == true) {
-        clearbtn.prop("disabled", false);
-    } else {
-        clearbtn.prop("disabled", true);
-    }
+function manage_clear_button(state) {
+    var clearbtn = $("#clear");
+    clearbtn.prop("disabled", state);
 }
 
 function checked_host() {
-    var selector = $("#id-select-commands");
-    var buttongo = $("#button_go");
+    var selector = $("#commands");
+    var buttongo = $("#go");
     var nhosts = $("input:checkbox[name=hosts]:checked").length;
     if (nhosts > 0) {
         buttongo.prop("disabled", false);
@@ -231,6 +226,6 @@ function manage_all_buttons(flag) {
     $("#EPSH").prop("disabled", flag);
     $("#EUPT").prop("disabled", flag);
     $("#all").prop("disabled", flag);
-    $("#button_clear").prop("disabled", flag);
-    $("#id-select-commands").prop("disabled", flag);
+    $("#clear").prop("disabled", flag);
+    $("#commands").prop("disabled", flag);
 }
