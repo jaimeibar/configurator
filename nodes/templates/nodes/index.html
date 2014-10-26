@@ -1,3 +1,6 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
 {% extends "base.html" %}
 
 {% load i18n %}
@@ -19,7 +22,7 @@
                         <button type="button" id="all" class="btn btn-default" name="all" value="all" onclick="get_selected('all')">All</button>
                     </td>
                     <td>
-                        <button type="button" id="button_clear" class="btn btn-default" disabled="disabled" onclick="clear_page()">Clear</button>
+                        <button type="button" id="clear" name="clear" class="btn btn-default" disabled="disabled" onclick="clear_page()">Clear</button>
                     </td>
                 </tr>
             </tbody>
@@ -28,7 +31,7 @@
             <tbody>
                 <tr>
                     <td id="id-td-commands" class="td-commands" colspan="2">
-                        <select id="id-select-commands" class="form-control" name="select-commands" disabled>
+                        <select id="commands" class="form-control" name="select-command" disabled>
                             <option id="empty" selected></option>
                             <option id="up" value="up">Power Up</option>
                             <option id="status" value="status">Power Status</option>
@@ -36,10 +39,10 @@
                         </select>
                     </td>
                     <td>
-                        <button type="button" id="button_go" class="btn btn-default" disabled="disabled" onclick="get_selected_hosts()">Go (0)</button>
+                        <button type="button" id="go" class="btn btn-default" disabled="disabled" onclick="get_selected_hosts()">Go (0)</button>
                     </td>
                     <td>
-                        <button type="button" id="button_stop" class="btn btn-default" disabled="disabled" onclick="stop()">Stop</button>
+                        <button type="button" id="stop" class="btn btn-default" disabled="disabled" onclick="stop()">Stop</button>
                     </td>
                 </tr>
             </tbody>
