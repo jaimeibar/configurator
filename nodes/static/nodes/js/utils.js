@@ -3,7 +3,16 @@
 */
 
 $(document).ready(function() {
-    var interval = null;
+    interval = null;
+    bifibutton = $("#Bifi");
+    cienciasbutton = $("#Ciencias");
+    epshbutton = $("EPSH");
+    euptbutton = $("#EUPT");
+    allbutton = $("all");
+    clearbutton = $("clear");
+    commands = $("#commands");
+    gobutton = $("#go");
+    stopbutton = $("stop");
 });
 
 function get_selected(sname) {
