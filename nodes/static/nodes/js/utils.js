@@ -6,13 +6,13 @@ $(document).ready(function() {
     interval = null;
     bifibutton = $("#Bifi");
     cienciasbutton = $("#Ciencias");
-    epshbutton = $("EPSH");
+    epshbutton = $("#EPSH");
     euptbutton = $("#EUPT");
-    allbutton = $("all");
-    clearbutton = $("clear");
+    allbutton = $("#all");
+    clearbutton = $("#clear");
     commands = $("#commands");
     gobutton = $("#go");
-    stopbutton = $("stop");
+    stopbutton = $("#stop");
 });
 
 function get_selected(sname) {
@@ -136,7 +136,7 @@ function manage_go_button() {
 }
 
 function manage_clear_button(state) {
-    clearbutton.prop("disabled", state);
+    clearbutton.prop("disabled", false);
 }
 
 function checked_host() {
