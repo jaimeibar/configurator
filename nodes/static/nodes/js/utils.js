@@ -191,6 +191,7 @@ function check_task_status() {
                 if (checkstatus.status == "complete") {
                     clearInterval(interval);
                     $("body").css("cursor", "default");
+                    stopbutton.prop("disabled", true);
                     manage_all_buttons(false);
                     get_task_result(data);
                 } else {
