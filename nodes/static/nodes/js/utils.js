@@ -136,7 +136,7 @@ function manage_go_button() {
 }
 
 function manage_clear_button(state) {
-    clearbutton.prop("disabled", false);
+    clearbutton.prop("disabled", state);
 }
 
 function checked_host() {
