@@ -57,7 +57,7 @@ function get_host() {
 
 function get_selected_hosts() {
     var allhosts = get_host();
-    var command = $("#commands").val();
+    var command = commands.val();
     manage_all_buttons(true);
     $("body").css("cursor", "progress");
     $.ajax({
@@ -73,7 +73,7 @@ function get_selected_hosts() {
             if ($.isEmptyObject(data)) {
                 interval = setInterval(check_task_status, 3000);
             } else {
-                $("#stop").prop("disabled", true);
+                stopbutton.prop("disabled", true);
                 $("body").css("cursor", "default");
                 get_task_result(data);
                 manage_all_buttons(false);
@@ -83,87 +83,80 @@ function get_selected_hosts() {
             console.log("Error");
         },
         beforeSend: function() {
-            $("#stop").prop("disabled", false);
+            stopbutton.prop("disabled", false);
         }
     });
 }
 
 function check_all() {
-    var selector = $("#commands");
-    var buttongo = $("#go");
     var hosts = $("input:checkbox[name=hosts]");
     var numberofhosts = hosts.length;
     var isanyselected = $("input:checkbox[name=hosts]:checked").length;
     if (isanyselected == 0) {
         hosts.prop("checked", true);
-        buttongo.prop("disabled", false);
-        buttongo.text("Go (" + numberofhosts + ")");
-        selector.prop("disabled", false);
-        selector.find("option[id=empty]").remove();
-        selector.find("option[id=status]").prop("selected", true);
+        gobutton.prop("disabled", false);
+        gobutton.tex("Go (" + numberofhosts + ")");
+        commands.prop("disabled", false);
+        commands.find("option[id=empty]").remove();
+        commands.find("option[id=status]").prop("selected", true);
     } else if (isanyselected == 36 || isanyselected == 144) {
         hosts.prop("checked", false);
-        buttongo.prop("disabled", true);
-        buttongo.text("Go (0)");
-        selector.prop("disabled", true);
-        selector.find("option[id=up]").before("<option id=empty selected></option>");
+        gobutton.prop("disabled", true);
+        gobutton.text("Go (0)");
+        commands.prop("disabled", true);
+        commands.find("option[id=up]").before("<option id=empty selected></option>");
     } else {
         $("input:checkbox[name=hosts]:not(:checked)").prop("checked", true);
-        buttongo.text("Go ("+ numberofhosts + ")");
+        gobutton.text("Go ("+ numberofhosts + ")");
     }
 }
 
 function clear_page() {
-    var selector = $("#commands");
     $("#div_hostlist").empty();
     manage_go_button();
     manage_clear_button(true);
-    $("#stop").prop("disabled", true);
-    selector.prop("disabled", true);
-    selector.find("option[id=up]").before("<option id=empty selected></option>");
+    stopbutton.prop("disabled", true);
+    commands.prop("disabled", true);
+    commands.find("option[id=up]").before("<option id=empty selected></option>");
 }
 
 function manage_go_button() {
-    var buttongo = $("#go");
-    var isdisabled = buttongo.prop("disabled");
+    var isdisabled = gobutton.prop("disabled");
     if (isdisabled) {
         if ($("input:checkbox[name=hosts]:checked").length == 0) {
-            buttongo.prop("disabled", true);
+            gobutton.prop("disabled", true);
         } else {
-            buttongo.prop("disabled", false);
+            gobutton.prop("disabled", false);
         }
     } else {
         var numenabled = $("input:checkbox[name=hosts]:checked").length;
-        buttongo.text("Go (" + numenabled + ")");
-        buttongo.prop("disabled", true);
+        gobutton.text("Go (" + numenabled + ")");
+        gobutton.prop("disabled", true);
     }
 }
 
 function manage_clear_button(state) {
-    var clearbtn = $("#clear");
-    clearbtn.prop("disabled", state);
+    clearbutton.prop("disabled", state);
 }
 
 function checked_host() {
-    var selector = $("#commands");
-    var buttongo = $("#go");
     var nhosts = $("input:checkbox[name=hosts]:checked").length;
     if (nhosts > 0) {
-        buttongo.prop("disabled", false);
-        buttongo.text("Go (" + nhosts + ")");
-        selector.prop("disabled", false);
-        selector.find("option[id=empty]").remove();
-        selector.find("option[id=status]").prop("selected", true);
+        gobutton.prop("disabled", false);
+        gobutton.text("Go (" + nhosts + ")");
+        commands.prop("disabled", false);
+        commands.find("option[id=empty]").remove();
+        commands.find("option[id=status]").prop("selected", true);
         if (nhosts == 36) {
             $("#all_hosts").prop("checked", true);
         } else {
             $("#all_hosts").prop("checked", false);
         }
     } else {
-        buttongo.text("Go (" + nhosts + ")");
-        buttongo.prop("disabled", true);
-        selector.prop("disabled", true);
-        selector.find("option[id=up]").before("<option id=empty selected></option>");
+        gobutton.text("Go (" + nhosts + ")");
+        gobutton.prop("disabled", true);
+        commands.prop("disabled", true);
+        commands.find("option[id=up]").before("<option id=empty selected></option>");
     }
 }
 
@@ -195,7 +188,7 @@ function check_task_status() {
                 console.log("Task not ready yet");
             } else {
                 var checkstatus = $(data).get(0);
-                if (checkstatus.status == 'complete') {
+                if (checkstatus.status == "complete") {
                     clearInterval(interval);
                     $("body").css("cursor", "default");
                     manage_all_buttons(false);
@@ -218,7 +211,7 @@ function get_task_result(data) {
             var status = v.power;
             var tdstatus = $("td[id*='" + k + "s']");
             tdstatus.text(status);
-            if (status == 'on') {
+            if (status == "on") {
                 tdstatus.addClass("onstatus");
             } else {
                 tdstatus.addClass("offstatus");
@@ -230,11 +223,11 @@ function get_task_result(data) {
 function manage_all_buttons(flag) {
     manage_go_button();
     manage_clear_button();
-    $("#Bifi").prop("disabled", flag);
-    $("#Ciencias").prop("disabled", flag);
-    $("#EPSH").prop("disabled", flag);
-    $("#EUPT").prop("disabled", flag);
-    $("#all").prop("disabled", flag);
-    $("#clear").prop("disabled", flag);
-    $("#commands").prop("disabled", flag);
+    bifibutton.prop("disabled", flag);
+    cienciasbutton.prop("disabled", flag);
+    epshbutton.prop("disabled", flag);
+    euptbutton.prop("disabled", flag);
+    allbutton.prop("disabled", flag);
+    clearbutton.prop("disabled", flag);
+    commands.prop("disabled", flag);
 }
