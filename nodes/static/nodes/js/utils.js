@@ -19,8 +19,8 @@ function get_selected(sname) {
     if($("input:checkbox[name=hosts]:checked").length > 0) {
         gobutton.text("Go (0)");
         gobutton.prop("disabled", true);
-        // manage_go_button();
         manage_commands_selector(true);
+        commands.find("option[id=up]").before("<option id=empty selected></option>");
     }
     $.ajax({
         data: {
