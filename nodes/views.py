@@ -61,7 +61,6 @@ def index(request):
                     stids.remove(stask)
                 elif res == FAILURE:
                     logger.info('Removing subtask from list: {0}'.format(stask))
-                    cancel_task(stask)
                     stids.remove(stask)
             if not result:
                 logger.info('No subtasks have finished yet')
