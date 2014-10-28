@@ -16,8 +16,12 @@ $(document).ready(function() {
 });
 
 function get_selected(sname) {
-    gobutton.text("Go (0)");
-    // manage_go_button();
+    if($("input:checkbox[name=hosts]:checked").length > 0) {
+        gobutton.text("Go (0)");
+        gobutton.prop("disabled", true);
+        // manage_go_button();
+        manage_commands_selector(true);
+    }
     $.ajax({
         data: {
             name: sname
@@ -228,16 +232,13 @@ function checked_host() {
 
 function manage_go_button() {
     var isdisabled = gobutton.prop("disabled");
-    console.log("Isdisabled + " + isdisabled);
     if (isdisabled) {
-        console.log("Disabled");
         if ($("input:checkbox[name=hosts]:checked").length == 0) {
             gobutton.prop("disabled", true);
         } else {
             gobutton.prop("disabled", false);
         }
     } else {
-        console.log("Enabled");
         var numenabled = $("input:checkbox[name=hosts]:checked").length;
         gobutton.text("Go (" + numenabled + ")");
         gobutton.prop("disabled", true);
