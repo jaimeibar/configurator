@@ -213,7 +213,7 @@ function checked_host() {
         manage_commands_selector(false);
         commands.find("option[id=empty]").remove();
         commands.find("option[id=status]").prop("selected", true);
-        if (nhosts == 36) {
+        if (nhosts == 36 || nhosts == 144) {
             $("#all_hosts").prop("checked", true);
         } else {
             $("#all_hosts").prop("checked", false);
