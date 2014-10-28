@@ -177,7 +177,7 @@ function check_all() {
     if (isanyselected == 0) {
         hosts.prop("checked", true);
         gobutton.prop("disabled", false);
-        gobutton.tex("Go (" + numberofhosts + ")");
+        gobutton.text("Go (" + numberofhosts + ")");
         manage_commands_selector(false);
         commands.find("option[id=empty]").remove();
         commands.find("option[id=status]").prop("selected", true);
