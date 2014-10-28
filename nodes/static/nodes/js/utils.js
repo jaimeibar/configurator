@@ -55,9 +55,16 @@ function get_host() {
     return selected_hosts;
 }
 
+function clear_previous_results() {
+    $(".onstatus").removeClass("onstatus").empty();
+}
+
 function get_selected_hosts() {
     var allhosts = get_host();
     var command = commands.val();
+    if ($(".onstatus").length > 0) {
+        clear_previous_results();
+    }
     manage_all_buttons(true);
     $("body").css("cursor", "progress");
     $.ajax({
