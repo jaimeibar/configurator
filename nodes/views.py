@@ -99,12 +99,12 @@ def cancel_task(taskid):
         # taskid is a subtasks id's list
         for stask in taskid:
             logger.info('Cancelling subtask: {0}'.format(stask))
-            AsyncResult(stask).revoke(terminate=True, signal='KILL')
+            AsyncResult(stask).revoke(terminate=True, signal='SIGKILL')
     else:
         # taskid is a GroupResult
         logger.info('Canceling group task: {0}'.format(taskid))
         gtask = GroupResult.restore(taskid)
-        gtask.revoke(terminate=True, signal='KILL')
+        gtask.revoke(terminate=True, signal='SIGKILL')
 
 
 def check_subtask_status(subtaskid):
