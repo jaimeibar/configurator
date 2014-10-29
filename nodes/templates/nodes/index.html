@@ -15,11 +15,11 @@
                 <tr>
                     {% for site in listsites %}
                         <td>
-                            <button type="button" id="{{ site.sitename }}" class="btn btn-default" name="{{ site.sitename }}" value="{{ site.sitename }}" onclick="get_selected('{{ site.sitename }}')">{{ site.sitename | capfirst }}</button>
+                            <button type="button" id="{{ site.sitename }}" class="btn btn-default" name="{{ site.sitename }}" value="{{ site.sitename }}" onclick="get_selected_site('{{ site.sitename }}')">{{ site.sitename | capfirst }}</button>
                         </td>
                     {% endfor %}
                     <td>
-                        <button type="button" id="all" class="btn btn-default" name="all" value="all" onclick="get_selected('all')">All</button>
+                        <button type="button" id="all" class="btn btn-default" name="all" value="all" onclick="get_selected_site('all')">All</button>
                     </td>
                     <td>
                         <button type="button" id="clear" name="clear" class="btn btn-default" disabled="disabled" onclick="clear_page()">Clear</button>
