@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-from settings_secret import SECRET_KEY
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -19,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = SECRET_KEY
+SECRET_KEY = '582dzt5+g(^r1)iclcvof8g9y)kx7w6#^v!j3vdoa@!jztaww5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -63,7 +62,7 @@ WSGI_APPLICATION = 'configurator.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'configurator.db'),
+        'NAME': os.path.join(BASE_DIR, 'configurator', 'configurator.db'),
     }
 }
 
@@ -106,7 +105,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'configurator.log'),
+            'filename': os.path.join(BASE_DIR, 'log', 'configurator.log'),
             'formatter': 'simple',
             'maxBytes': 1000000,
             'backupCount': 10
