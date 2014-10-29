@@ -56,7 +56,6 @@ docs/_build/
 .idea
 
 # Secret configs
-configurator/settings_secret.py
 nodes/fixtures
 configurator.db
 jquery-*.js
