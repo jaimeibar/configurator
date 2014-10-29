@@ -1,7 +1,13 @@
 /**
  * Created by jim on 12/03/14.
+ * @fileOverview Utilities functions
+ * @author Jaime Ibar
+ * @version 0.1
 */
 
+/**
+ * Global variables.
+ */
 $(document).ready(function() {
     interval = null;
     bifibutton = $("#Bifi");
@@ -15,7 +21,12 @@ $(document).ready(function() {
     stopbutton = $("#stop");
 });
 
-function get_selected(sname) {
+/**
+ * Get sitename selected and build a table with the hostnames and ips
+ * that belong to that site.
+ * @param sname sitename
+ */
+function get_selected_site(sname) {
     if($("input:checkbox[name=hosts]:checked").length > 0) {
         gobutton.text("Go (0)");
         gobutton.prop("disabled", true);
@@ -52,7 +63,11 @@ function get_selected(sname) {
     });
 }
 
-function get_host() {
+/**
+ * Get all hosts that are checked.
+ * @returns {Array} selected_hosts The array of selected hosts
+ */
+function get_hosts() {
     var selected_hosts = [];
     var checked_hosts = $("input:checkbox[name=hosts]:checked");
     checked_hosts.each(function() {
@@ -61,14 +76,23 @@ function get_host() {
     return selected_hosts;
 }
 
+/**
+ * Clear previous results from hosts table.
+ */
 function clear_previous_results() {
     $(".onstatus").removeClass("onstatus").empty();
     $(".offstatus").removeClass("offstatus").empty();
 }
 
+/**
+ * Get selected hosts and begins the execution.
+ * If the execution is not finished, launch an interval
+ * with check_task_status function, get the task results otherwise.
+ */
 function get_selected_hosts() {
-    var allhosts = get_host();
+    var allhosts = get_hosts();
     var command = commands.val();
+    // Is there a previous execution?
     if ($(".onstatus").length > 0 || $(".offstatus").length > 0) {
         clear_previous_results();
     }
@@ -108,6 +132,10 @@ function get_selected_hosts() {
     });
 }
 
+/**
+ * Check the task status and if this has finished, clear the
+ * interval and get the results.
+ */
 function check_task_status() {
     $.ajax({
         data: "status",
@@ -140,6 +168,10 @@ function check_task_status() {
     });
 }
 
+/**
+ * Get the task results and show them in the table with
+ * either on or off status.
+ */
 function get_task_result(data) {
     $.each(data, function(key, value) {
         $.each(value, function (k, v) {
@@ -155,6 +187,9 @@ function get_task_result(data) {
     })
 }
 
+/**
+ * Stop the execution requested by the user.
+ */
 function stop() {
     $.ajax({
         data: 'cancel',
@@ -175,6 +210,10 @@ function stop() {
     })
 }
 
+/**
+ * Check or uncheck all hosts in case the upper left checkbox is
+ * checked or unchecked.
+ */
 function check_all() {
     var hosts = $("input:checkbox[name=hosts]");
     var numberofhosts = hosts.length;
@@ -200,6 +239,9 @@ function check_all() {
     }
 }
 
+/**
+ * Clear page and shows it empty.
+ */
 function clear_page() {
     $("#div_hostlist").empty();
     manage_go_button();
@@ -209,6 +251,10 @@ function clear_page() {
     commands.find("option[id=up]").before("<option id=empty selected></option>");
 }
 
+/**
+ * Manage buttons status when one host checkbox is checked or
+ * unchecked.
+ */
 function checked_host() {
     var nhosts = $("input:checkbox[name=hosts]:checked").length;
     if (nhosts > 0) {
@@ -231,6 +277,9 @@ function checked_host() {
     }
 }
 
+/**
+ * Manage go button behaviour.
+ */
 function manage_go_button() {
     var isdisabled = gobutton.prop("disabled");
     if (isdisabled) {
@@ -246,6 +295,10 @@ function manage_go_button() {
     }
 }
 
+/**
+ * Manage sites buttons behaviour.
+ * @param flag Establish the status of the buttons(enabled or disabled).
+ */
 function manage_sites_buttons(flag) {
     bifibutton.prop("disabled", flag);
     cienciasbutton.prop("disabled", flag);
@@ -254,18 +307,34 @@ function manage_sites_buttons(flag) {
     allbutton.prop("disabled", flag);
 }
 
+/**
+ * Manage all button behaviour.
+ * @param flag Establish the status of the button(enabled or disabled).
+ */
 function manage_all_button(flag) {
     allbutton.prop("disabled", flag);
 }
 
+/**
+ * Manage clear button behaviour.
+ * @param flag Establish the status of the button(enabled or disabled).
+ */
 function manage_clear_button(state) {
     clearbutton.prop("disabled", state);
 }
 
+/**
+ * Manage commands selector behaviour.
+ * @param flag Establish the status of the button(enabled or disabled).
+ */
 function manage_commands_selector(state) {
     commands.prop("disabled", state);
 }
 
+/**
+ * Manage stop button behaviour.
+ * @param flag Establish the status of the button(enabled or disabled).
+ */
 function manage_stop_button(state) {
     stopbutton.prop("disabled", state);
 }
