@@ -63,12 +63,13 @@ function get_host() {
 
 function clear_previous_results() {
     $(".onstatus").removeClass("onstatus").empty();
+    $(".offstatus").removeClass("offstatus").empty();
 }
 
 function get_selected_hosts() {
     var allhosts = get_host();
     var command = commands.val();
-    if ($(".onstatus").length > 0) {
+    if ($(".onstatus").length > 0 || $(".offstatus").length > 0) {
         clear_previous_results();
     }
     manage_sites_buttons(true);
