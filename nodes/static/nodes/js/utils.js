@@ -257,8 +257,8 @@ function clear_page() {
  */
 function checked_host() {
     var nhosts = $("input:checkbox[name=hosts]:checked").length;
+    clear_previous_results();
     if (nhosts > 0) {
-        clear_previous_results();
         gobutton.prop("disabled", false);
         gobutton.text("Go (" + nhosts + ")");
         manage_commands_selector(false);
