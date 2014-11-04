@@ -99,6 +99,18 @@ LOGGING = {
     'formatters': {
         'simple': {
             'format': '[%(asctime)s] [%(levelname)s] %(message)s'
+        },
+        'color': {
+            '()': 'colorlog.ColoredFormatter',
+            'format': '%(log_color)s[%(asctime)s] [%(levelname)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+            'log_colors': {
+                'DEBUG': 'bold_black',
+                'INFO': 'blue',
+                'WARNING': 'yellow',
+                'ERROR': 'red',
+                'CRITICAL': 'bold_red'
+            },
         }
     },
     'handlers': {
@@ -106,7 +118,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, 'log', 'configurator.log'),
-            'formatter': 'simple',
+            'formatter': 'color',
             'maxBytes': 1000000,
             'backupCount': 10
         },
