@@ -56,14 +56,20 @@ def index(request):
             for stask in stids:
                 res = check_subtask_status(stask)
                 if isinstance(res, dict):
-                    logger.info('Getting result for task: {0}'.format(stask))
+                    if 'Error' in res.values():
+                        # Task has reached max retries.
+                        logger.error('Max retries exceeded.')
+                    else:
+                        logger.info('Getting result for task: {0}'.format(stask))
                     result.append(res)
                     stids.remove(stask)
                 elif res == FAILURE:
                     logger.info('Removing subtask from list: {0}'.format(stask))
                     stids.remove(stask)
-            if not result:
+            if not result and len(stids) > 0:
                 logger.info('No subtasks have finished yet')
+            elif not result and len(stids) == 0:
+                logger.warning('No more tasks in queue')
             else:
                 logger.info('Subtasks finished: {0} ---- {1}'.format(result, len(result)))
             logger.info('Subtasks remaining: {0}'.format(len(stids)))
