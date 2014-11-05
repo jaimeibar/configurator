@@ -4,6 +4,7 @@ from socket import gaierror
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from celery.states import FAILURE
+from celery.exceptions import MaxRetriesExceededError
 from pyghmi.ipmi import command
 from pyghmi.exceptions import IpmiException
 
@@ -18,7 +19,7 @@ def set_task_failed(self, *args, **kwargs):
     self.update_state(state=FAILURE)
 
 
-@shared_task(bind=True, on_failure=set_task_failed, default_retry_delay=30)
+@shared_task(bind=True, on_failure=set_task_failed, default_retry_delay=10, max_retries=5)
 def execute_ipmi_command(self, host, ipmicommand):
     result = {}
     try:
@@ -59,4 +60,8 @@ def execute_ipmi_command(self, host, ipmicommand):
     else:
         logger.error('No ipmisession established for host: {0}'.format(host))
         logger.error('Retrying')
-        self.retry()
+        try:
+            self.retry()
+        except MaxRetriesExceededError:
+            result[host] = {'power': 'Error'}
+            return result
