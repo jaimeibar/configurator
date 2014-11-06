@@ -65,5 +65,5 @@ def execute_ipmi_command(self, host, ipmicommand):
             self.retry()
         except MaxRetriesExceededError:
             logger.warning('Max retries exceeded. Cancelling task.')
-            result[host] = {'power': 'Error'}
+            result[host] = {'power': 'N/A'}
             return result
