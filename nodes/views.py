@@ -56,9 +56,10 @@ def index(request):
             for stask in stids:
                 res = check_subtask_status(stask)
                 if isinstance(res, dict):
-                    if 'Error' in res.values():
+                    host = res.keys().pop()
+                    if 'N/A' in res.get(host).values():
                         # Task has reached max retries.
-                        logger.error('Max retries exceeded.')
+                        logger.error('Max retries exceeded for host: {0}'.format(host))
                     else:
                         logger.info('Getting result for task: {0}'.format(stask))
                     result.append(res)
