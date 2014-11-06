@@ -19,7 +19,7 @@ def set_task_failed(self, *args, **kwargs):
     self.update_state(state=FAILURE)
 
 
-@shared_task(bind=True, on_failure=set_task_failed, default_retry_delay=10, max_retries=5)
+@shared_task(bind=True, on_failure=set_task_failed, default_retry_delay=10)
 def execute_ipmi_command(self, host, ipmicommand):
     result = {}
     try:
@@ -60,8 +60,10 @@ def execute_ipmi_command(self, host, ipmicommand):
     else:
         logger.error('No ipmisession established for host: {0}'.format(host))
         logger.error('Retrying')
+        logger.info('Number of retries: {0}'.format(self.request.retries))
         try:
             self.retry()
         except MaxRetriesExceededError:
+            logger.warning('Max retries exceeded. Cancelling task.')
             result[host] = {'power': 'Error'}
             return result
