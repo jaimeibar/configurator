@@ -65,5 +65,7 @@ def execute_ipmi_command(self, host, ipmicommand):
             self.retry()
         except MaxRetriesExceededError:
             logger.warning('Max retries exceeded. Cancelling task.')
+            logger.warning('Unable to complete task: {0} for host {1}. Setting to N/A'.format(self.request.id, host))
+            logger.error('Host unreachable: {0}'.format(host))
             result[host] = {'power': 'N/A'}
             return result
