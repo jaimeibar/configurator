@@ -5,12 +5,14 @@
 
 {% load i18n %}
 
-{% block title %}{{ title }}{% trans 'Configurator' %}{% endblock %}
+{% block title %}{{ title }}{% trans 'Powerator' %}{% endblock %}
 
 {% block body-content %}
+    <div class="page-header">
+        <h1 class="text-center caption-sites">Powerator</h1>
+    </div>
     <div id="div_table_sites">
         <table id="table_buttons_sites" class="table-buttons">
-            <caption id="caption_sites" class="caption-sites">Sites</caption>
             <tbody>
                 <tr>
                     {% for site in listsites %}
