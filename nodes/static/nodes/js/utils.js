@@ -207,6 +207,7 @@ function stop() {
             manage_clear_button(false);
             manage_commands_selector(false);
             manage_stop_button(true);
+            manage_go_button(false);
         }
     })
 }
