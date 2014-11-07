@@ -286,6 +286,7 @@ function manage_go_button() {
     if (isdisabled) {
         if ($("input:checkbox[name=hosts]:checked").length == 0) {
             gobutton.prop("disabled", true);
+            gobutton.text("Go (0)");
         } else {
             gobutton.prop("disabled", false);
         }
