@@ -67,7 +67,7 @@ function get_selected_site(sname) {
  * Get all hosts that are checked.
  * @returns {Array} selected_hosts The array of selected hosts
  */
-function get_hosts() {
+function get_selected_hosts() {
     var selected_hosts = [];
     var checked_hosts = $("input:checkbox[name=hosts]:checked");
     checked_hosts.each(function() {
@@ -85,17 +85,41 @@ function clear_previous_results() {
 }
 
 /**
- * Get selected hosts and begins the execution.
- * If the execution is not finished, launch an interval
- * with check_task_status function, get the task results otherwise.
+ * Get command selected by user.
+ * @returns command
  */
-function get_selected_hosts() {
-    var allhosts = get_hosts();
+function get_selected_command() {
     var command = commands.val();
+    return command;
+}
+
+/**
+ * Collects data needed for execution
+ */
+function do_execution() {
+    var command = get_selected_command();
+    var allhosts = get_selected_hosts();
     // Is there a previous execution?
     if ($(".onstatus").length > 0 || $(".offstatus").length > 0) {
         clear_previous_results();
     }
+    if (command == "up" || command == "down") {
+        var msg = allhosts.join("\n");
+        var resp = confirm("The command will be applied to: \n" + msg + "\nAre you sure?");
+        if (resp) {
+            do_ipmi_execution(allhosts, command);
+        }
+    } else {
+        do_ipmi_execution(allhosts, command);
+    }
+}
+
+/**
+ * Start ipmi execution
+ * @param hosts List of selected hosts by user
+ * @param command Ipmi command to execute in hosts
+ */
+function do_ipmi_execution(hosts, command) {
     manage_sites_buttons(true);
     manage_commands_selector(true);
     manage_clear_button(true);
@@ -106,7 +130,7 @@ function get_selected_hosts() {
         url: "/index",
         dataType: "json",
         data: {
-            selectedhosts: allhosts,
+            selectedhosts: hosts,
             cmd: command
         },
         traditional: true,
