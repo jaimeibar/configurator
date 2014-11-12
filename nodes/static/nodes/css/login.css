@@ -45,7 +45,7 @@ input[type="email"], input[type="password"] {
     color: #555;
 }
 
-input[type="submit"] {
+button[type="submit"] {
     width: 100%;
     background: #3399cc;
     border: 0;
@@ -56,6 +56,6 @@ input[type="submit"] {
     cursor: pointer;
 }
 
-input[type="submit"]:hover {
+button[type="submit"]:hover {
     background: #2288bb;
 }
