@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}Login{% endblock %}
+
+{% block body-content %}
+
+    <div id="login">
+        <h1>Log in</h1>
+        <form>
+            <input type="email" placeholder="Email" />
+            <input type="password" placeholder="Password" />
+            <input type="submit" value="Log in" />
+        </form>
+    </div>
+
+{% endblock %}
