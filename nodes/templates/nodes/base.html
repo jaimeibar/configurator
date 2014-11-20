@@ -1,9 +1,8 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-        "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 
 {% load staticfiles %}
 
-<html lang="{{ LANGUAGE_CODE|default:"en-us" }}">
+<html lang="{{ LANGUAGE_CODE|default:"en-US" }}">
     <head>
         <title>{% block title %}{% endblock %}</title>
         <link rel="stylesheet" type="text/css" href="{% static "nodes/css/bootstrap.min.css" %}"/>
@@ -15,6 +14,7 @@
         <script type="text/javascript" src="{% static "nodes/js/utils.js" %}"></script>
         <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         {% block extrastyle %}{% endblock %}
         <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "nodes/css/ie.css" %}{% endblock %}" /><![endif]-->
         {% block extrahead %}{% endblock %}
